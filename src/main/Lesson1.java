@@ -42,6 +42,7 @@ public class Lesson1 {
   */
   int loadALData() {
     // Load wav data into a buffer.
+	  // Made this change
     AL10.alGenBuffers(buffer);
 
     if(AL10.alGetError() != AL10.AL_NO_ERROR)
