@@ -69,6 +69,7 @@ public class ExampleApplet extends Applet {
 	}
 	
 	public void init() {
+		System.err.println("Program began");
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {

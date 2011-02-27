@@ -26,7 +26,7 @@ public class Main{
             render();
             Display.update();
         }
-
+        
         Display.destroy();
     }
 
@@ -61,13 +61,14 @@ public class Main{
         GL11.glClearDepth(1.0f);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
-        GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT,
-        GL11.GL_NICEST);
+        GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
         
         b = new Box();
     }
 
+    /*
     public static void main(String[] args){
         new Main();
     }
+    */
 }
