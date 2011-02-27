@@ -51,7 +51,7 @@ public class SoundWrapper {
 		}
 	}
 	
-	public boolean initializeSource(String fileName) {
+	public boolean initializeSource(String fileName, boolean loop, boolean skip) {
 		if(this.curNumSources >= numSources) {
 			return false;
 		}
@@ -64,6 +64,9 @@ public class SoundWrapper {
 			return false;
 		}
 		sources[this.curNumSources].setPlaying(false);
+		if(skip) {
+			sources[this.curNumSources].setSkip(skip);
+		}
 		AL10.alBufferData(buffer.get(curNumSources), waveFile.format, waveFile.data, waveFile.samplerate);
 		waveFile.dispose();
 		  AL10.alSourcei(source.get(curNumSources), AL10.AL_BUFFER,   buffer.get(curNumSources));
@@ -71,7 +74,10 @@ public class SoundWrapper {
 		  AL10.alSourcef(source.get(curNumSources), AL10.AL_GAIN,     1.0f          );
 		  AL10.alSource (source.get(curNumSources), AL10.AL_POSITION, (FloatBuffer) sources[this.curNumSources].getSourcePos());
 		  AL10.alSource (source.get(curNumSources), AL10.AL_VELOCITY, (FloatBuffer) sources[this.curNumSources].getSourceVel());
-		  AL10.alSourcei(source.get(curNumSources), AL10.AL_LOOPING,  AL10.AL_TRUE  );
+		  if(loop)
+			  AL10.alSourcei(source.get(curNumSources), AL10.AL_LOOPING,  AL10.AL_TRUE  );
+		  else
+			  AL10.alSourcei(source.get(curNumSources), AL10.AL_LOOPING,  AL10.AL_FALSE  );
 		  curNumSources++;
 		}
 		return true;
@@ -168,13 +174,15 @@ public class SoundWrapper {
 	
 	public void play() {
 		for(int i = 0; i < this.curNumSources; i++) {
+			if(sources[i].isSkipped() != true) {
 			sources[i].setPlaying(true);
 			AL10.alSourcePlay(source.get(i));
+			}
 		}
 	}
 	public void singlePlay(int sourceIndex) {
 		if(sourceIndex < this.curNumSources && sourceIndex >= 0) {
-			AL10.alSourcePlay(source.get(sourceIndex));
+				AL10.alSourcePlay(source.get(sourceIndex));
 		}
 	}
 	public void stop() {
@@ -191,12 +199,14 @@ public class SoundWrapper {
 	}
 	public void pause() {
 		for(int i = 0; i < this.curNumSources; i++) {
-			sources[i].setPlaying(false);
-			AL10.alSourcePause(source.get(i));
+			if(sources[i].isSkipped() != true) {
+				sources[i].setPlaying(false);
+				AL10.alSourcePause(source.get(i));
+			}
 		}
 	}
 	public void singlePause(int sourceIndex) {
-		if(sourceIndex < this.curNumSources && sourceIndex >= 0) {
+		if(sourceIndex < this.curNumSources && sourceIndex >= 0 && sources[sourceIndex].isSkipped() != true) {
 			sources[sourceIndex].setPlaying(false);
 			AL10.alSourcePause(source.get(sourceIndex));
 		}
@@ -204,13 +214,27 @@ public class SoundWrapper {
 	public boolean areAllPlaying() {
 		boolean boolRet = true;
 		for(int i = 0; i < this.curNumSources; i ++) {
-			boolRet = boolRet && sources[i].isPlaying();
+			if(!sources[i].isSkipped())
+				boolRet = boolRet && sources[i].isPlaying();
 		}
 		return boolRet;
 	}
 	public boolean isSourcePlaying(int sourceIndex) {
 		if(sourceIndex < this.curNumSources) {
 			return sources[sourceIndex].isPlaying();
+		}
+		else {
+			return false;
+		}
+	}
+	public void setSourceSkip(int sourceIndex) {
+		if(sourceIndex < this.curNumSources) {
+			sources[sourceIndex].setSkip(true);
+		}
+	}
+	public boolean isSourceSkipping(int sourceIndex) {
+		if(sourceIndex < this.curNumSources) {
+			return sources[sourceIndex].isSkipped();
 		}
 		else {
 			return false;

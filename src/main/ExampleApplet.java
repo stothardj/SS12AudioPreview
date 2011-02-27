@@ -117,11 +117,15 @@ public class ExampleApplet extends Applet {
 	}
 	
 	public void audioInit() {
-		audioPlayer = new SoundWrapper(2);
-		audioPlayer.initializeSource("Still Alive from Portal (Music Only synced).wav");
+		audioPlayer = new SoundWrapper(6);
+		audioPlayer.initializeSource("Still Alive from Portal (Music Only synced).wav", true, false);
 		audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
-		audioPlayer.initializeSource("Still Alive from Portal (Vocals Only).wav");
+		audioPlayer.initializeSource("Still Alive from Portal (Vocals Only).wav", true, false);
 		audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -21.000f}));
+		audioPlayer.initializeSource("play.wav", false, true);
+		audioPlayer.initializeSource("pause.wav", false, true);
+		audioPlayer.initializeSource("prevseat.wav", false, true);
+		audioPlayer.initializeSource("nextseat.wav", false, true);
 	}
 
 	protected void initGL() {
@@ -268,10 +272,14 @@ public class ExampleApplet extends Applet {
     		right = !right && pright;
     		pright = tright;
     		pleft = tleft;
-	    	if( left && !right)
+	    	if( left && !right) {
+	    		audioPlayer.singlePlay(4);
 	    		pos = seats.prevSeatCoord();
-	    	else if( right && !left)
+	    	}
+	    	else if( right && !left) {
+	    		audioPlayer.singlePlay(5);
 	    		pos = seats.nextSeatCoord();
+	    	}
 	    	if( pos != null ) {
 	    		System.err.println("Pos is "+pos);
 		    	camera = new Point3D(pos);
@@ -292,9 +300,11 @@ public class ExampleApplet extends Applet {
 	    	if(space) {
 	    		System.err.println("Space Pressed");
 	    		if(audioPlayer.areAllPlaying()) {
+	    			audioPlayer.singlePlay(3);
 	    			audioPlayer.pause();
 	    		}
 	    		else {
+	    			audioPlayer.singlePlay(2);
 	    			audioPlayer.play();
 	    		}
 	    	}
@@ -309,7 +319,11 @@ public class ExampleApplet extends Applet {
     	*/
     }
     public void setListenerPosition() { 	
-    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());	    	
+    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
     }
 	public void gameLoop() {
 		while(running) {
