@@ -5,20 +5,25 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.nio.FloatBuffer;
 import java.util.Iterator;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
-public class ExampleApplet extends Applet implements KeyListener {
+public class ExampleApplet extends Applet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Canvas display_parent;
 	Parser p;
 	Point3D camera;
-	
-	boolean up, down, left, right;
 	
 	/** Thread which runs the main game loop */
 	Thread gameThread;
@@ -78,8 +83,6 @@ public class ExampleApplet extends Applet implements KeyListener {
 	public void init() {
 		System.err.println("Program began");
 		
-		this.addKeyListener(this);
-		
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {
@@ -106,6 +109,28 @@ public class ExampleApplet extends Applet implements KeyListener {
 
 	protected void initGL() {
 		int w, h;
+		FloatBuffer light_ambient = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 1.0f});
+		
+		FloatBuffer light_diffuse = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.0f});
+		FloatBuffer light_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.0f});
+		FloatBuffer light_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 1.000f});
+		FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 2.000f, 0.000f, 0.000f});
+		
+		FloatBuffer cube_color = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.200f, 0.200f, 0.200f, 1.000f});
+		FloatBuffer cube_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.000f});
+		FloatBuffer cube_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 1.000f});
+		
+		light_ambient.rewind();
+		light_position.rewind();
+		cube_color.rewind();
+		cube_specular.rewind();
+		cube_emission.rewind();
+		light_diffuse.rewind();
+		light_specular.rewind();
+		light_emission.rewind();
+		
+		float cube_shininess = 128.0f;
+		
 		w = getWidth();
 		h = getHeight();
         GL11.glViewport(0,0,w,h);
@@ -120,9 +145,27 @@ public class ExampleApplet extends Applet implements KeyListener {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
-                
+        
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_LIGHT0);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+        GL11.glColorMaterial(GL11.GL_AMBIENT_AND_DIFFUSE, GL11.GL_FILL);
+        
+        GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, light_ambient);
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, light_diffuse);
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, light_specular);
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_EMISSION, light_emission);
+        
+        GL11.glMaterial(GL11.GL_FRONT, GL11.GL_COLOR, cube_color);
+        GL11.glMaterial(GL11.GL_FRONT, GL11.GL_SPECULAR, cube_specular);
+        GL11.glMaterial(GL11.GL_FRONT, GL11.GL_EMISSION, cube_emission);
+        GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS, cube_shininess);
+        
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
+        
         p = new Parser("../models/stadium.obj");
-        camera = new Point3D(0,0,0);
+        camera = new Point3D(0,2,0);
 	}
 	
     private void render(){
@@ -138,14 +181,24 @@ public class ExampleApplet extends Applet implements KeyListener {
     }
 
     public void controlCamera() {
+    	boolean up, down, left, right;
+    	up =Keyboard.isKeyDown(Keyboard.KEY_UP);
+    	down = Keyboard.isKeyDown(Keyboard.KEY_DOWN);
+    	left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
+    	right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
     	if( up && !down)
-    		camera.y ++;
+    		camera.z --;
     	else if( down && !up)
-    		camera.y --;
+    		camera.z ++;
     	if( left && !right)
     		camera.x --;
     	else if( right && !left)
     		camera.x ++;
+    }
+    public void controlLight() {
+    	FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, camera.z, camera.y, camera.x});
+    	light_position.rewind();
+    	GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
     }
 	public void gameLoop() {
 		while(running) {
@@ -153,52 +206,10 @@ public class ExampleApplet extends Applet implements KeyListener {
 			render();
 			Display.update();
 			controlCamera();
+			controlLight();
 		}
 		
 		Display.destroy();
 	}
 
-
-	@Override
-	public void keyTyped(KeyEvent e) {}
-
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		System.err.println("Key pressed");
-		switch(e.getKeyCode()) {
-		case KeyEvent.VK_UP:
-			up = true;
-			break;
-		case KeyEvent.VK_DOWN:
-			down = true;
-			break;
-		case KeyEvent.VK_LEFT:
-			left = true;
-			break;
-		case KeyEvent.VK_RIGHT:
-			right = true;
-			break;
-		}
-	}
-
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		System.err.println("Key released");
-		switch(e.getKeyCode()) {
-		case KeyEvent.VK_UP:
-			up = false;
-			break;
-		case KeyEvent.VK_DOWN:
-			down = false;
-			break;
-		case KeyEvent.VK_LEFT:
-			left = false;
-			break;
-		case KeyEvent.VK_RIGHT:
-			right = false;
-			break;
-		}		
-	}
 }
