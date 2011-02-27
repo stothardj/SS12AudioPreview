@@ -1,4 +1,4 @@
-package main;
+package sound;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
