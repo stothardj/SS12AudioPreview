@@ -86,7 +86,9 @@ public class Triangle {
         GL11.glTranslatef(0.0f, 0.0f, -10.0f);
 
         // Fill
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
+        GL11.glColor3f((new Double(p1.x).hashCode() % 273) / 273.0f,
+        		(new Double(p2.z).hashCode() % 273) / 273.0f,
+        		(new Double(p3.y).hashCode() % 273) / 273.0f);
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         GL11.glPolygonOffset(1, 1);
         GL11.glBegin(GL11.GL_TRIANGLES);

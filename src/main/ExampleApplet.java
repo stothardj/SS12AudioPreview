@@ -111,14 +111,14 @@ public class ExampleApplet extends Applet {
 		int w, h;
 		FloatBuffer light_ambient = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 1.0f});
 		
-		FloatBuffer light_diffuse = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.0f});
-		FloatBuffer light_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.0f});
-		FloatBuffer light_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 1.000f});
-		FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 2.000f, 0.000f, 0.000f});
+		FloatBuffer light_diffuse = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.600f, 0.600f, 0.600f, 1.0f});
+		FloatBuffer light_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.100f, 0.100f, 0.100f, 1.0f});
+		FloatBuffer light_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 0.000f});
+		FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, -16.000f, 3.000f, 3.000f});
 		
 		FloatBuffer cube_color = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.200f, 0.200f, 0.200f, 1.000f});
 		FloatBuffer cube_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.000f});
-		FloatBuffer cube_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 1.000f});
+		FloatBuffer cube_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 0.000f});
 		
 		light_ambient.rewind();
 		light_position.rewind();
@@ -196,9 +196,11 @@ public class ExampleApplet extends Applet {
     		camera.x ++;
     }
     public void controlLight() {
+/*
     	FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, camera.z, camera.y, camera.x});
     	light_position.rewind();
     	GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
+    	*/
     }
 	public void gameLoop() {
 		while(running) {
@@ -207,6 +209,8 @@ public class ExampleApplet extends Applet {
 			Display.update();
 			controlCamera();
 			controlLight();
+			
+			//System.err.println("X: "+camera.x+ "Y: "+camera.y+"Z:"+camera.z);
 		}
 		
 		Display.destroy();
