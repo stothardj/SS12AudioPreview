@@ -1,0 +1,16 @@
+body{
+    margin: 25px;
+    background-color:#CCEEFF;
+    color: #000000;
+    font-family: Verdana;
+}
+div#content{
+    padding: 20px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    background-color:#FFFFFF;
+}
+td{
+    vertical-align:top;
+    padding: 30px;
+}
