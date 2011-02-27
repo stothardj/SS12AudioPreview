@@ -1,16 +1,15 @@
 package main;
 
-import org.lwjgl.opengl.GL11;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.Util;
+import org.lwjgl.opengl.GL11;
 
 /**
 * The vertex and fragment shaders are setup when the box object is
@@ -84,15 +83,30 @@ public class Triangle {
         }
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0f, 0.0f, -10.0f);
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);//white
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-        GL11.glPolygonOffset(1, 1);
 
+        // Fill
+        GL11.glColor3f((new Double(p1.x).hashCode() % 273) / 273.0f,
+        		(new Double(p2.z).hashCode() % 273) / 273.0f,
+        		(new Double(p3.y).hashCode() % 273) / 273.0f);
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        GL11.glPolygonOffset(1, 1);
         GL11.glBegin(GL11.GL_TRIANGLES);
         GL11.glVertex3f(p1.x - camera.x, p1.y - camera.y, p1.z - camera.z);
         GL11.glVertex3f(p2.x - camera.x, p2.y - camera.y, p2.z - camera.z);
         GL11.glVertex3f(p3.x - camera.x, p3.y - camera.y, p3.z - camera.z);
         GL11.glEnd();
+        
+        // Line
+        /*
+        GL11.glColor3f(0.0f, 0.0f, 0.0f);
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+        GL11.glPolygonOffset(1, 1);
+        GL11.glBegin(GL11.GL_TRIANGLES);
+        GL11.glVertex3f(p1.x - camera.x, p1.y - camera.y, p1.z - camera.z);
+        GL11.glVertex3f(p2.x - camera.x, p2.y - camera.y, p2.z - camera.z);
+        GL11.glVertex3f(p3.x - camera.x, p3.y - camera.y, p3.z - camera.z);
+        GL11.glEnd();
+        */
 
         //release the shader
         ARBShaderObjects.glUseProgramObjectARB(0);
