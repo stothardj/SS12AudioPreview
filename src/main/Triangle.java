@@ -1,16 +1,15 @@
 package main;
 
-import org.lwjgl.opengl.GL11;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.Util;
+import org.lwjgl.opengl.GL11;
 
 /**
 * The vertex and fragment shaders are setup when the box object is

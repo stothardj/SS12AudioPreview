@@ -3,8 +3,6 @@ package main;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
 
@@ -86,6 +84,10 @@ public class ExampleApplet extends Applet {
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 8561150810006220384L;
 				public final void addNotify() {
 					super.addNotify();
 					startLWJGL();
