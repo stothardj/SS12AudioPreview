@@ -135,8 +135,10 @@ public class SoundWrapper {
 			return;
 		}
 		else {
-			sources[sourceIndex].setSourcePos(buffer);
-			AL10.alSource (source.get(sourceIndex), AL10.AL_POSITION, (FloatBuffer) sources[sourceIndex].getSourcePos());
+			if(sources[sourceIndex] != null) {
+				sources[sourceIndex].setSourcePos(buffer);
+				AL10.alSource (source.get(sourceIndex), AL10.AL_POSITION, (FloatBuffer) sources[sourceIndex].getSourcePos());
+			}
 		}		
 	}
 	public void setSourceVel(int sourceIndex, FloatBuffer buffer) {
