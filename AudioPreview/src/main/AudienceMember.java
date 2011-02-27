@@ -2,9 +2,6 @@ package main;
 
 import java.nio.FloatBuffer;
 
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-
 public class AudienceMember {
 	/** Position of the listener. */
 	private FloatBuffer listenerPos;
@@ -24,9 +21,6 @@ public class AudienceMember {
 		this.listenerVel.rewind();
 		this.listenerOri = listenerOri;
 		this.listenerOri.rewind();
-		if (AL.isCreated()) {
-			this.setListenerValues();
-		}
 	}
 
 	public void setListenerPos(FloatBuffer listenerPos) {
@@ -61,13 +55,6 @@ public class AudienceMember {
 		this.listenerOri.put(index, ori);
 		this.listenerOri.rewind();
 	}
-
-	void setListenerValues() {
-		AL10.alListener(AL10.AL_POSITION, listenerPos);
-		AL10.alListener(AL10.AL_VELOCITY, listenerVel);
-		AL10.alListener(AL10.AL_ORIENTATION, listenerOri);
-	}
-
 	public FloatBuffer getListenerPos() {
 		return this.listenerPos;
 	}
