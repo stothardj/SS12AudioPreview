@@ -10,6 +10,7 @@ public class AudioSource {
 	/** Velocity of the listener. */
 	private FloatBuffer sourceVel;
 	private boolean isPlaying;
+	private boolean skipPlay;
 
 	public AudioSource(FloatBuffer sourcePos, FloatBuffer sourceVel) {
 		this.sourcePos = sourcePos;
@@ -17,6 +18,7 @@ public class AudioSource {
 		this.sourceVel = sourceVel;
 		this.sourceVel.rewind();
 		this.isPlaying = false;
+		this.skipPlay = false;
 	}
 
 	public void setSourcePos(FloatBuffer sourcePos) {
@@ -61,5 +63,11 @@ public class AudioSource {
 	}
 	public boolean isPlaying() {
 		return this.isPlaying;
+	}
+	public void setSkip(boolean result) {
+		this.skipPlay = result;
+	}
+	public boolean isSkipped() {
+		return this.skipPlay;
 	}
 }
