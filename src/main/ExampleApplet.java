@@ -7,6 +7,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+import com.obj.*;
 
 public class ExampleApplet extends Applet {
 	
@@ -70,6 +71,8 @@ public class ExampleApplet extends Applet {
 	
 	public void init() {
 		System.err.println("Program began");
+		WavefrontObject loadedWaveObject = new WavefrontObject("../models/stadium.obj");
+		
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {

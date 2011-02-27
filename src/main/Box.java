@@ -2,6 +2,7 @@ package main;
 
 import org.lwjgl.opengl.GL11;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -43,8 +44,8 @@ public class Box {
         shader=ARBShaderObjects.glCreateProgramObjectARB();
         
         if(shader!=0){
-            vertShader=createVertShader("shaders/screen.vert");
-            fragShader=createFragShader("shaders/screen.frag");
+            vertShader=createVertShader("main/screen.vert");
+            fragShader=createFragShader("main/screen.frag");
         }
         else useShader=false;
         
@@ -77,7 +78,7 @@ public class Box {
         }
         GL11.glLoadIdentity();
         GL11.glTranslatef(0.0f, 0.0f, -10.0f);
-        GL11.glColor3f(1.0f, 1.0f, 0.0f);//white
+        GL11.glColor3f(1.0f, 1.0f, 1.0f);//white
 
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex3f(-1.0f, 1.0f, 2.0f);
@@ -111,6 +112,7 @@ public class Box {
             }
         }catch(Exception e){
             System.out.println("Fail reading vertex shading code");
+            e.printStackTrace();
             return 0;
         }
         /*
