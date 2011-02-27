@@ -32,6 +32,15 @@ public class SeatSoundWrapper {
 		return seatList.get(currentSeat);
 	}
 	
+	public Point3D incSeatCoord(int n) {
+		currentSeat+=n;
+		if(currentSeat >= seatList.size())
+			currentSeat = seatList.size() - 1;
+		else if(currentSeat < 0)
+			currentSeat = 0;
+		return seatList.get(currentSeat);
+	}	
+	
 	public Point3D prevSeatCoord() {
 		currentSeat--;
 		if(currentSeat <= -1)

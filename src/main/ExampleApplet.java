@@ -26,7 +26,7 @@ public class ExampleApplet extends Applet {
 	Parser p;
 	Point3D camera;
 	SeatSoundWrapper seats;
-	boolean pright, pleft, pspace;
+	boolean pright, pleft, pup, pdown, pspace;
 	private SoundWrapper audioPlayer;
 	private static final float audioOffset = 0.2f;
 	
@@ -205,8 +205,8 @@ public class ExampleApplet extends Applet {
         	Point3D curr = it.next();
         	if(seatExtrema[3] != seatExtrema[0])
         		curr.x = (curr.x - seatExtrema[0]) / (seatExtrema[3] - seatExtrema[0]) * (stadiumExtrema[3] - stadiumExtrema[0]) + stadiumExtrema[0];
-        	if(seatExtrema[4] != seatExtrema[1])
-        		curr.y = (curr.y - seatExtrema[1]) / (seatExtrema[4] - seatExtrema[1]) * (stadiumExtrema[4] - stadiumExtrema[1]) + stadiumExtrema[1];
+        	//if(seatExtrema[4] != seatExtrema[1])
+        	//	curr.y = (curr.y - seatExtrema[1]) / (seatExtrema[4] - seatExtrema[1]) * (stadiumExtrema[4] - stadiumExtrema[1]) + stadiumExtrema[1];
         	if(seatExtrema[5] != seatExtrema[2])
         		curr.z = (curr.z - seatExtrema[2]) / (seatExtrema[5] - seatExtrema[2]) * (stadiumExtrema[5] - stadiumExtrema[2]) + stadiumExtrema[2];
         }
@@ -264,14 +264,27 @@ public class ExampleApplet extends Applet {
     		Point3D pos = null;
     		boolean tleft = left;
     		boolean tright = right;
+    		boolean tup = up;
+    		boolean tdown = down;
     		left = !left && pleft;
     		right = !right && pright;
     		pright = tright;
     		pleft = tleft;
+    		
+    		up = !up && pup;
+    		down = !down && pdown;
+    		pup = tup;
+    		pdown = tdown;
+    		
 	    	if( left && !right)
 	    		pos = seats.prevSeatCoord();
 	    	else if( right && !left)
 	    		pos = seats.nextSeatCoord();
+	    	else if( down && !up)
+	    		pos = seats.incSeatCoord(-30);
+	    	else if( up && !down)
+	    		pos = seats.incSeatCoord(30);
+
 	    	if( pos != null ) {
 	    		System.err.println("Pos is "+pos);
 		    	camera = new Point3D(pos);
