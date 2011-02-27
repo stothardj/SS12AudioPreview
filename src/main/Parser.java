@@ -4,20 +4,35 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 public class Parser {
+	private class Obj {
+		public Obj(String name, int vertStart) {
+			this.name = name;
+			this.vertStart = vertStart;
+		}
+		String name;
+		int vertStart;
+	}
 	public ArrayList<Triangle> triangles;
 	public ArrayList<Point3D> vertices;
+	LinkedList<Obj> objs;
 	public Parser(String filename) {
 		triangles = new ArrayList<Triangle>();
 		vertices = new ArrayList<Point3D>();
+		objs = new LinkedList<Obj>();
 		File file = new File(filename);
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String line;
 			while((line = reader.readLine()) != null) {
 				char t = line.charAt(0);
-				if(t == 'v' || t == 'f') {
+				if(t == 'o')
+					objs.add(new Obj(line.substring(1).trim(), vertices.size()));
+				else if(t == 'v' || t == 'f') {
 					
 					String args[] = line.split(" ");
 					
@@ -41,5 +56,20 @@ public class Parser {
 			System.err.println("Parser error");
 			e.printStackTrace();
 		}
-	} 
+	}
+	public ArrayList<Point3D> getObjVerts(String name) {
+		Iterator<Obj> it = objs.iterator();
+		while(it.hasNext()) {
+			Obj curr = it.next();
+			if(curr.name.equals(name)) {
+				int end;
+				if(it.hasNext())
+					end = it.next().vertStart;
+				else
+					end = vertices.size();
+				return new ArrayList<Point3D>(vertices.subList(curr.vertStart, end));
+			}
+		}
+		return null;
+	}
 }
