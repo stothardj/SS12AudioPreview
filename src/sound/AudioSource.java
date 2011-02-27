@@ -9,12 +9,14 @@ public class AudioSource {
 	private FloatBuffer sourcePos;
 	/** Velocity of the listener. */
 	private FloatBuffer sourceVel;
+	private boolean isPlaying;
 
 	public AudioSource(FloatBuffer sourcePos, FloatBuffer sourceVel) {
 		this.sourcePos = sourcePos;
 		this.sourcePos.rewind();
 		this.sourceVel = sourceVel;
 		this.sourceVel.rewind();
+		this.isPlaying = false;
 	}
 
 	public void setSourcePos(FloatBuffer sourcePos) {
@@ -53,5 +55,11 @@ public class AudioSource {
 	}
 	public float getSourceSVel(int index) {
 		return this.sourceVel.get(index);
+	}
+	public void setPlaying(boolean result) {
+		this.isPlaying = result;
+	}
+	public boolean isPlaying() {
+		return this.isPlaying;
 	}
 }

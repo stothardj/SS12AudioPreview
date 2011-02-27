@@ -6,6 +6,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.ALC10;
 import org.lwjgl.util.WaveData;
 
 public class SoundWrapper {
@@ -33,6 +35,8 @@ public class SoundWrapper {
 			sources = new AudioSource[numSources];
 			this.buffer = BufferUtils.createIntBuffer(numSources);
 			this.source = BufferUtils.createIntBuffer(numSources);
+			AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE_CLAMPED);
+			AL10.alGetError();
 			AL10.alGenBuffers(this.buffer);
 			if (AL10.alGetError() != AL10.AL_NO_ERROR) {
 				return;
@@ -59,6 +63,7 @@ public class SoundWrapper {
 		if(waveFile == null) {
 			return false;
 		}
+		sources[this.curNumSources].setPlaying(false);
 		AL10.alBufferData(buffer.get(curNumSources), waveFile.format, waveFile.data, waveFile.samplerate);
 		waveFile.dispose();
 		  AL10.alSourcei(source.get(curNumSources), AL10.AL_BUFFER,   buffer.get(curNumSources));
@@ -163,6 +168,7 @@ public class SoundWrapper {
 	
 	public void play() {
 		for(int i = 0; i < this.curNumSources; i++) {
+			sources[i].setPlaying(true);
 			AL10.alSourcePlay(source.get(i));
 		}
 	}
@@ -173,22 +179,41 @@ public class SoundWrapper {
 	}
 	public void stop() {
 		for(int i = 0; i < this.curNumSources; i++) {
+			sources[i].setPlaying(false);
 			AL10.alSourceStop(source.get(i));
 		}
 	}
 	public void singleStop(int sourceIndex) {
 		if(sourceIndex < this.curNumSources && sourceIndex >= 0) {
+			sources[sourceIndex].setPlaying(false);
 			AL10.alSourceStop(source.get(sourceIndex));
 		}
 	}
 	public void pause() {
 		for(int i = 0; i < this.curNumSources; i++) {
+			sources[i].setPlaying(false);
 			AL10.alSourcePause(source.get(i));
 		}
 	}
 	public void singlePause(int sourceIndex) {
 		if(sourceIndex < this.curNumSources && sourceIndex >= 0) {
+			sources[sourceIndex].setPlaying(false);
 			AL10.alSourcePause(source.get(sourceIndex));
+		}
+	}
+	public boolean areAllPlaying() {
+		boolean boolRet = true;
+		for(int i = 0; i < this.curNumSources; i ++) {
+			boolRet = boolRet && sources[i].isPlaying();
+		}
+		return boolRet;
+	}
+	public boolean isSourcePlaying(int sourceIndex) {
+		if(sourceIndex < this.curNumSources) {
+			return sources[sourceIndex].isPlaying();
+		}
+		else {
+			return false;
 		}
 	}
 }

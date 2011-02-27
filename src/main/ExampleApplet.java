@@ -14,6 +14,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
+import sound.*;
+
 public class ExampleApplet extends Applet {
 	
 	/**
@@ -24,7 +26,9 @@ public class ExampleApplet extends Applet {
 	Parser p;
 	Point3D camera;
 	SeatSoundWrapper seats;
-	boolean pright, pleft;
+	boolean pright, pleft, pspace;
+	private SoundWrapper audioPlayer;
+	private static final float audioOffset = 0.2f;
 	
 	/** Thread which runs the main game loop */
 	Thread gameThread;
@@ -83,7 +87,7 @@ public class ExampleApplet extends Applet {
 	
 	public void init() {
 		System.err.println("Program began");
-		
+		audioInit();
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {
@@ -110,6 +114,14 @@ public class ExampleApplet extends Applet {
 			System.err.println(e);
 			throw new RuntimeException("Unable to create display");
 		}
+	}
+	
+	public void audioInit() {
+		audioPlayer = new SoundWrapper(2);
+		audioPlayer.initializeSource("Still Alive from Portal (Music Only synced).wav");
+		audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
+		audioPlayer.initializeSource("Still Alive from Portal (Vocals Only).wav");
+		audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -21.000f}));
 	}
 
 	protected void initGL() {
@@ -171,6 +183,7 @@ public class ExampleApplet extends Applet {
         
         p = new Parser("../models/stadium.obj");
         camera = new Point3D(0,2,0);
+        audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z}));
         float[] stadiumExtrema = extremaVerts(p, p.getObjVerts("Cube"));
         ArrayList<Point3D> ss = p.getObjVerts("Grid");
         float[] seatExtrema = extremaVerts(p, ss);
@@ -238,11 +251,12 @@ public class ExampleApplet extends Applet {
     }
 
     public void controlCamera() {
-    	boolean up, down, left, right, shift;
-    	up =Keyboard.isKeyDown(Keyboard.KEY_UP);
+    	boolean up, down, left, right, shift, space;
+    	up = Keyboard.isKeyDown(Keyboard.KEY_UP);
     	down = Keyboard.isKeyDown(Keyboard.KEY_DOWN);
     	left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
     	right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
+    	space = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
     	
     	shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     	
@@ -263,6 +277,9 @@ public class ExampleApplet extends Applet {
 		    	camera = new Point3D(pos);
 	    	}
     	} else {
+    		boolean tspace = space;
+    		space = !space && pspace;
+    		pspace = tspace;
 	    	if( up && !down)
 	    		camera.z --;
 	    	else if( down && !up)
@@ -271,6 +288,16 @@ public class ExampleApplet extends Applet {
 	    		camera.x --;
 	    	else if( right && !left)
 	    		camera.x ++;
+	    	this.setListenerPosition();
+	    	if(space) {
+	    		System.err.println("Space Pressed");
+	    		if(audioPlayer.areAllPlaying()) {
+	    			audioPlayer.pause();
+	    		}
+	    		else {
+	    			audioPlayer.play();
+	    		}
+	    	}
 	    	System.err.println("Camera is at "+camera);
     	}
     }
@@ -280,6 +307,9 @@ public class ExampleApplet extends Applet {
     	light_position.rewind();
     	GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
     	*/
+    }
+    public void setListenerPosition() { 	
+    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());	    	
     }
 	public void gameLoop() {
 		while(running) {
