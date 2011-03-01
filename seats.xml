@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<venue>
+
+<venuename>Sample</venuename>
+  <seatarea>
+    <areaname>Main</areaname>
+    <nrows>30</nrows>
+    <firstspos>
+      <xpos>10</xpos>
+      <ypos>2</ypos>
+      <zpos>3</zpos>
+    </firstspos>
+    <seatsprow>20</seatsprow>
+    <slant>15</slant>
+  </seatarea>
+
+  <seatarea>
+    <areaname>Balcony</areaname>
+    <nrows>10</nrows>
+    <firstspos>
+      <xpos>10</xpos>
+      <ypos>14</ypos>
+      <zpos>3</zpos>
+    </firstspos>
+    <seatsprow>20</seatsprow>
+    <slant>15</slant>
+  </seatarea>
+
+</venue>
