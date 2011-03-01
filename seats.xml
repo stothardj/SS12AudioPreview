@@ -2,7 +2,7 @@
 
 <venue>
 
-<venuename>Sample</venuename>
+  <venuename>Sample</venuename>
   <seatarea>
     <areaname>Main</areaname>
     <nrows>30</nrows>
@@ -13,6 +13,8 @@
     </firstspos>
     <seatsprow>20</seatsprow>
     <slant>15</slant>
+    <seatpadding>3</seatpadding>
+    <rowpadding>2</rowpadding>
   </seatarea>
 
   <seatarea>
@@ -25,6 +27,8 @@
     </firstspos>
     <seatsprow>20</seatsprow>
     <slant>15</slant>
+    <seatpadding>3</seatpadding>
+    <rowpadding>2</rowpadding>
   </seatarea>
 
 </venue>
