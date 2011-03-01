@@ -12,5 +12,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/jake/.eclipse/org.eclipse.platform_3.6.1_1543616141/plugins/org.lwjgl_2.7.1/native/linux"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/usr/share/java/objimport.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

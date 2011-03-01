@@ -14,6 +14,11 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
+import com.obj.Face;
+import com.obj.Group;
+import com.obj.Vertex;
+import com.obj.WavefrontObject;
+
 import sound.*;
 
 public class ExampleApplet extends Applet {
@@ -23,9 +28,9 @@ public class ExampleApplet extends Applet {
 	 */
 	private static final long serialVersionUID = 1L;
 	Canvas display_parent;
-	Parser p;
-	Point3D camera;
-	SeatSoundWrapper seats;
+	WavefrontObject stadium;
+	Vertex camera;
+	//SeatSoundWrapper seats;
 	boolean pright, pleft, pup, pdown, pspace;
 	private SoundWrapper audioPlayer;
 	private static final float audioOffset = 0.2f;
@@ -185,9 +190,11 @@ public class ExampleApplet extends Applet {
         
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
         
-        p = new Parser("../models/stadium.obj");
-        camera = new Point3D(0,2,0);
-        audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z}));
+        //p = new Parser("../models/stadium.obj");
+        stadium = new WavefrontObject("../models/stadium3.obj");
+        camera = new Vertex(0,2,0);
+        audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
+        /*
         float[] stadiumExtrema = extremaVerts(p, p.getObjVerts("Cube"));
         ArrayList<Point3D> ss = p.getObjVerts("Grid");
         float[] seatExtrema = extremaVerts(p, ss);
@@ -215,41 +222,24 @@ public class ExampleApplet extends Applet {
         		curr.z = (curr.z - seatExtrema[2]) / (seatExtrema[5] - seatExtrema[2]) * (stadiumExtrema[5] - stadiumExtrema[2]) + stadiumExtrema[2];
         }
         seats = new SeatSoundWrapper(ss);
+        */
 	}
-	
-	private float[] extremaVerts(Parser p, ArrayList<Point3D> arr) {
-		float[] ret;
-        float maxx, maxy, maxz, minx, miny, minz;
-        maxx = maxy = maxz = Float.MIN_VALUE;
-        minx = miny = minz = Float.MAX_VALUE;
-        Iterator<Point3D> it = arr.iterator();
-        while(it.hasNext()) {
-        	Point3D curr = it.next();
-        	if( curr.x > maxx )
-        		maxx = curr.x;
-        	if( curr.y > maxy )
-        		maxy = curr.y;
-        	if( curr.z > maxz)
-        		maxz = curr.z;
-        	if( curr.x < minx )
-        		minx = curr.x;
-        	if( curr.y < miny )
-        		miny = curr.y;
-        	if( curr.z < minz)
-        		minz = curr.z;
-        }
-        ret = new float[]{ minx, miny, minz, maxx, maxy, maxz };
-		return ret;
-	}
-	
+		
     private void render(){
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT |GL11.GL_DEPTH_BUFFER_BIT);
         
-        Iterator<Triangle> it = p.triangles.iterator();
-        int i = 0;
-        while(it.hasNext()) {
-        	i ++;
-        	it.next().draw(camera);
+        Iterator<Group> groupIt = stadium.getGroups().iterator();
+        while(groupIt.hasNext()) {
+        	Iterator<Face> faceIt = groupIt.next().getFaces().iterator();
+        	while(faceIt.hasNext()) {
+        		Face face = faceIt.next();
+        		Vertex[] verts = face.getVertices();
+        		if(face.getType() == Face.GL_TRIANGLES) {
+        			new Triangle(verts[0],verts[1],verts[2]).draw(camera);
+        		} else {
+        			new Quad(verts[0],verts[1],verts[2],verts[3]).draw(camera);
+        		}
+        	}
         }
         GL11.glLoadIdentity();
     }
@@ -265,7 +255,7 @@ public class ExampleApplet extends Applet {
     	shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     	
     	if(shift) {
-    		Point3D pos = null;
+    		Vertex pos = null;
     		boolean tleft = left;
     		boolean tright = right;
     		boolean tup = up;
@@ -280,7 +270,7 @@ public class ExampleApplet extends Applet {
     		down = !down && pdown;
     		pup = tup;
     		pdown = tdown;
-    		
+    		/*
 	    	if( left && !right) {
 	    		audioPlayer.singlePlay(4);
 	    		pos = seats.prevSeatCoord();
@@ -297,18 +287,19 @@ public class ExampleApplet extends Applet {
 	    		System.err.println("Pos is "+pos);
 		    	camera = new Point3D(pos);
 	    	}
+	    	*/
     	} else {
     		boolean tspace = space;
     		space = !space && pspace;
     		pspace = tspace;
 	    	if( up && !down)
-	    		camera.z --;
+	    		camera.setZ(camera.getZ() - 1);
 	    	else if( down && !up)
-	    		camera.z ++;
+	    		camera.setZ(camera.getZ() + 1);
 	    	if( left && !right)
-	    		camera.x --;
+	    		camera.setX(camera.getX() - 1);
 	    	else if( right && !left)
-	    		camera.x ++;
+	    		camera.setX(camera.getX() + 1);
 	    	this.setListenerPosition();
 	    	if(space) {
 	    		System.err.println("Space Pressed");
@@ -321,7 +312,7 @@ public class ExampleApplet extends Applet {
 	    			audioPlayer.play();
 	    		}
 	    	}
-	    	System.err.println("Camera is at "+camera);
+	    	//System.err.println("Camera is at "+camera);
     	}
     }
     public void controlLight() {
@@ -332,11 +323,11 @@ public class ExampleApplet extends Applet {
     	*/
     }
     public void setListenerPosition() { 	
-    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.x, camera.y, camera.z*0.9f}).rewind());
+    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
+    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
     }
 	public void gameLoop() {
 		while(running) {

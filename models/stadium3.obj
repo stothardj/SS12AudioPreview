@@ -1,6 +1,6 @@
 # Blender3D v249 OBJ File: stadium3.blend
 # www.blender3d.org
-mtllib stadium.mtl
+mtllib stadium3.mtl
 v 7.038458 -0.235835 -14.076434
 v 14.076434 -0.235834 14.076434
 v -14.076436 -0.235834 14.076430
@@ -249,7 +249,8 @@ vn -0.788203 0.000015 -0.615416
 vn -0.615416 -0.000026 0.788203
 vn -0.615415 -0.000027 0.788203
 vn -0.000000 -1.000000 0.000000
-usemtl Material
+g Cube_Cube_Material.001
+usemtl Material.001
 s off
 f 38//1 9//1 10//1
 f 38//2 18//2 9//2

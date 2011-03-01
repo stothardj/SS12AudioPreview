@@ -4,16 +4,18 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 
+import com.obj.Vertex;
+
 public class SeatSoundWrapper {
-	
+
 	private int currentSeat;
-	private ArrayList<Point3D> seatList;
-	
-	public SeatSoundWrapper(ArrayList<Point3D> seatList) {
+	private ArrayList<Vertex> seatList;
+
+	public SeatSoundWrapper(ArrayList<Vertex> seatList) {
 		currentSeat = 0;
 		this.seatList = seatList;
 	}
-	
+
 	public FloatBuffer getSeatCoord(int index) {
 		if(index + 1 > seatList.size()) {
 			index = seatList.size() - 2;
@@ -22,17 +24,17 @@ public class SeatSoundWrapper {
 			index = 1;
 		}
 		this.currentSeat = index;
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(index).x, this.seatList.get(index).y, this.seatList.get(index).z });
+		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(index).getX(), this.seatList.get(index).getY(), this.seatList.get(index).getZ() });
 	}
-	
-	public Point3D nextSeatCoord() {
+
+	public Vertex nextSeatCoord() {
 		currentSeat++;
 		if(currentSeat >= seatList.size())
 			currentSeat = seatList.size() - 1;
 		return seatList.get(currentSeat);
 	}
-	
-	public Point3D incSeatCoord(int n) {
+
+	public Vertex incSeatCoord(int n) {
 		currentSeat+=n;
 		if(currentSeat >= seatList.size())
 			currentSeat = seatList.size() - 1;
@@ -40,31 +42,31 @@ public class SeatSoundWrapper {
 			currentSeat = 0;
 		return seatList.get(currentSeat);
 	}	
-	
-	public Point3D prevSeatCoord() {
+
+	public Vertex prevSeatCoord() {
 		currentSeat--;
 		if(currentSeat <= -1)
 			currentSeat = 0;
 		return seatList.get(currentSeat);
 	}
-	
+
 	public FloatBuffer getNextSeatCoord() {
 		currentSeat++;
 		if(this.currentSeat >= seatList.size()) {
 			currentSeat = seatList.size() - 1;
 		}
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).x, this.seatList.get(this.currentSeat).y, this.seatList.get(this.currentSeat).z });
+		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).getX(), this.seatList.get(this.currentSeat).getY(), this.seatList.get(this.currentSeat).getZ() });
 	}
-	
+
 	public FloatBuffer getPreviousSeatCoord() {
 		currentSeat--;
 		if(this.currentSeat < 0) {
 			currentSeat = 0;
 		}
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).x, this.seatList.get(this.currentSeat).y, this.seatList.get(this.currentSeat).z });
+		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).getX(), this.seatList.get(this.currentSeat).getY(), this.seatList.get(this.currentSeat).getZ() });
 	}
-	
+
 	public FloatBuffer getCurrentSeatCoord() {
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).x, this.seatList.get(this.currentSeat).y, this.seatList.get(this.currentSeat).z });
+		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).getX(), this.seatList.get(this.currentSeat).getY(), this.seatList.get(this.currentSeat).getZ() });
 	}
 }
