@@ -4,8 +4,8 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.net.*;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -14,12 +14,12 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
+import sound.SoundWrapper;
+
 import com.obj.Face;
 import com.obj.Group;
 import com.obj.Vertex;
 import com.obj.WavefrontObject;
-
-import sound.*;
 
 public class ExampleApplet extends Applet {
 	
@@ -42,6 +42,7 @@ public class ExampleApplet extends Applet {
 	boolean running = false;	
 	
 	public void startLWJGL() {
+		
 		gameThread = new Thread() {
 			public void run() {
 				running = true;
@@ -123,14 +124,25 @@ public class ExampleApplet extends Applet {
 	
 	public void audioInit() {
 		audioPlayer = new SoundWrapper(6);
-		audioPlayer.initializeSource("Still Alive from Portal (Music Only synced).wav", true, false);
-		audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
-		audioPlayer.initializeSource("Still Alive from Portal (Vocals Only).wav", true, false);
-		audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -21.000f}));
-		audioPlayer.initializeSource("play.wav", false, true);
-		audioPlayer.initializeSource("pause.wav", false, true);
-		audioPlayer.initializeSource("prevseat.wav", false, true);
-		audioPlayer.initializeSource("nextseat.wav", false, true);
+		URL portalMusic, portalVocals, play, pause, prevseat, nextseat;
+		try {
+			portalMusic = new URL(getCodeBase(), "Still Alive from Portal (Music Only synced).wav");
+			portalVocals = new URL(getCodeBase(), "Still Alive from Portal (Vocals Only).wav");
+			play = new URL(getCodeBase(), "play.wav");
+			pause = new URL(getCodeBase(), "pause.wav");
+			prevseat = new URL(getCodeBase(), "prevseat.wav");
+			nextseat = new URL(getCodeBase(), "nextseat.wav");
+			audioPlayer.initializeSource(portalMusic.getFile(), true, false);
+			audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
+			audioPlayer.initializeSource(portalVocals.getFile(), true, false);
+			audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -21.000f}));
+			audioPlayer.initializeSource(play.getFile(), false, true);
+			audioPlayer.initializeSource(pause.getFile(), false, true);
+			audioPlayer.initializeSource(prevseat.getFile(), false, true);
+			audioPlayer.initializeSource(nextseat.getFile(), false, true);
+		} catch(MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void initGL() {
@@ -190,8 +202,15 @@ public class ExampleApplet extends Applet {
         
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
         
-        //p = new Parser("../models/stadium.obj");
-        stadium = new WavefrontObject("../models/stadium3.obj");
+        URL stadiumUrl;
+        try {
+        stadiumUrl = new URL(getCodeBase(), "../models/stadium3.obj");
+        System.err.println("Reading file from " + stadiumUrl.getFile());
+        stadium = new WavefrontObject(stadiumUrl.getFile());
+        } catch(MalformedURLException e) {
+        	e.printStackTrace();
+        }
+        
         camera = new Vertex(0,2,0);
         audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
         /*
