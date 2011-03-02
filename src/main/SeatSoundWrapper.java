@@ -35,8 +35,14 @@ public class SeatSoundWrapper {
 		if(row > this.parseArea.getRows()-1) {
 			row = this.parseArea.getRows()-1;
 		}
+		else if(row < 0) {
+			row = 0;
+		}
 		if(seatNumber > this.parseArea.getSeatsPerRow()-1) {
 			seatNumber = this.parseArea.getSeatsPerRow()-1;
+		}
+		else if (seatNumber < 0) {
+			seatNumber = 0;
 		}
 		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.parseArea.getSeats()[row][seatNumber].getX(), this.parseArea.getSeats()[row][seatNumber].getY(), this.parseArea.getSeats()[row][seatNumber].getZ()});
 	}
