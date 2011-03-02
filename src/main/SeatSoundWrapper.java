@@ -7,66 +7,33 @@ import org.lwjgl.BufferUtils;
 import com.obj.Vertex;
 
 public class SeatSoundWrapper {
+	private SeatArea parseArea;
 
-	private int currentSeat;
-	private ArrayList<Vertex> seatList;
-
-	public SeatSoundWrapper(ArrayList<Vertex> seatList) {
-		currentSeat = 0;
-		this.seatList = seatList;
+	public SeatSoundWrapper(SeatArea parseArea) {
+		this.parseArea = parseArea;
 	}
 
 	public FloatBuffer getSeatCoord(int index) {
-		if(index + 1 > seatList.size()) {
-			index = seatList.size() - 2;
+		int seatsPerRow = this.parseArea.getSeatsPerRow();
+		int absoluteLength = this.parseArea.getSeats().length * seatsPerRow;
+		if(index + 1 > absoluteLength) {
+			index = absoluteLength - 2;
 		}
-		else if(this.currentSeat - 1 < 0) {
+		else if(index - 1 < 0) {
 			index = 1;
 		}
-		this.currentSeat = index;
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(index).getX(), this.seatList.get(index).getY(), this.seatList.get(index).getZ() });
+		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.parseArea.getSeats()[index/seatsPerRow][index%seatsPerRow].getX(), this.parseArea.getSeats()[index/seatsPerRow][index%seatsPerRow].getY(), this.parseArea.getSeats()[index/seatsPerRow][index%seatsPerRow].getZ()});
 	}
-
-	public Vertex nextSeatCoord() {
-		currentSeat++;
-		if(currentSeat >= seatList.size())
-			currentSeat = seatList.size() - 1;
-		return seatList.get(currentSeat);
-	}
-
-	public Vertex incSeatCoord(int n) {
-		currentSeat+=n;
-		if(currentSeat >= seatList.size())
-			currentSeat = seatList.size() - 1;
-		else if(currentSeat < 0)
-			currentSeat = 0;
-		return seatList.get(currentSeat);
-	}	
-
-	public Vertex prevSeatCoord() {
-		currentSeat--;
-		if(currentSeat <= -1)
-			currentSeat = 0;
-		return seatList.get(currentSeat);
-	}
-
-	public FloatBuffer getNextSeatCoord() {
-		currentSeat++;
-		if(this.currentSeat >= seatList.size()) {
-			currentSeat = seatList.size() - 1;
+	
+	public FloatBuffer getSeatCoord(int row, int seatNumber) {
+		int seatsPerRow = this.parseArea.getSeatsPerRow();
+		int rows = this.parseArea.getRows();
+		if(row > this.parseArea.getRows()-1) {
+			row = this.parseArea.getRows()-1;
 		}
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).getX(), this.seatList.get(this.currentSeat).getY(), this.seatList.get(this.currentSeat).getZ() });
-	}
-
-	public FloatBuffer getPreviousSeatCoord() {
-		currentSeat--;
-		if(this.currentSeat < 0) {
-			currentSeat = 0;
+		if(seatNumber > this.parseArea.getSeatsPerRow()-1) {
+			seatNumber = this.parseArea.getSeatsPerRow()-1;
 		}
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).getX(), this.seatList.get(this.currentSeat).getY(), this.seatList.get(this.currentSeat).getZ() });
-	}
-
-	public FloatBuffer getCurrentSeatCoord() {
-		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.seatList.get(this.currentSeat).getX(), this.seatList.get(this.currentSeat).getY(), this.seatList.get(this.currentSeat).getZ() });
+		return (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { this.parseArea.getSeats()[row][seatNumber].getX(), this.parseArea.getSeats()[row][seatNumber].getY(), this.parseArea.getSeats()[row][seatNumber].getZ()});
 	}
 }
