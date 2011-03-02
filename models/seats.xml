@@ -5,15 +5,15 @@
   <venuename>Sample</venuename>
   <seatarea>
     <areaname>Main</areaname>
-    <nrows>30</nrows>
+    <nrows>15</nrows>
     <firstspos>
-      <xpos>10</xpos>
-      <ypos>2</ypos>
+      <xpos>-11</xpos>
+      <ypos>2.2</ypos>
       <zpos>3</zpos>
     </firstspos>
     <seatsprow>20</seatsprow>
-    <slant>15</slant>
-    <seatpadding>3</seatpadding>
+    <slant>0.2</slant>
+    <seatpadding>1.1</seatpadding>
     <rowpadding>2</rowpadding>
   </seatarea>
 
