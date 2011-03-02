@@ -1,10 +1,11 @@
 package main;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Venue {
 	public Venue() {
-		
+		seatAreas = new LinkedList<SeatArea>();
 	}
 	
 	public void setName(String name) {

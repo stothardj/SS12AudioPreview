@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
+import java.util.List;
 import java.net.*;
 
 import org.lwjgl.BufferUtils;
@@ -202,17 +203,24 @@ public class ExampleApplet extends Applet {
         
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
         
-        URL stadiumUrl;
+        List<Venue> venues = null;
+        URL stadiumUrl, seatsUrl;
+        StadiumParser stadiumParser = new StadiumParser();
         try {
         stadiumUrl = new URL(getCodeBase(), "../models/stadium.obj");
+        seatsUrl = new URL(getCodeBase(), "../models/seats.xml");
+        venues = stadiumParser.parse(seatsUrl);
         System.err.println("Reading file from " + stadiumUrl.getFile());
         stadium = new WavefrontObject(stadiumUrl.getFile());
-        } catch(MalformedURLException e) {
+        } catch(Exception e) {
         	e.printStackTrace();
         }
         
+        Venue venue = venues.get(0);
+        
         camera = new Vertex(0,2,0);
         audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
+        
         /*
         float[] stadiumExtrema = extremaVerts(p, p.getObjVerts("Cube"));
         ArrayList<Point3D> ss = p.getObjVerts("Grid");
@@ -246,6 +254,8 @@ public class ExampleApplet extends Applet {
 		
     private void render(){
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT |GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glLoadIdentity();
+        //GL11.glRotatef(20, 1, 0, 0);
         
         Iterator<Group> groupIt = stadium.getGroups().iterator();
         while(groupIt.hasNext()) {
@@ -363,7 +373,7 @@ public class ExampleApplet extends Applet {
 	}
 	
 	public void drawTriangle(Vertex p1, Vertex p2, Vertex p3) {
-        GL11.glLoadIdentity();
+        //GL11.glLoadIdentity();
 
         // Fill
         GL11.glColor3f((new Double(p1.getX()).hashCode() % 273) / 273.0f,
@@ -390,7 +400,7 @@ public class ExampleApplet extends Applet {
 	}
 	
 	public void drawQuad(Vertex p1, Vertex p2, Vertex p3, Vertex p4) {
-        GL11.glLoadIdentity();
+       // GL11.glLoadIdentity();
 
         // Fill
         GL11.glColor3f((new Double(p1.getX()).hashCode() % 273) / 273.0f,

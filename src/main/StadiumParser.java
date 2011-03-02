@@ -48,14 +48,14 @@ public class StadiumParser {
 						sa.setRows(Integer.parseInt(getTagValue("nrows", seatArea)));
 						sa.setSeatsPerRow(Integer.parseInt(getTagValue("seatsprow", seatArea)));
 						sa.setSlant(Integer.parseInt(getTagValue("slant", seatArea)));
-						Element firstpos = (Element) seatArea.getElementsByTagName("firstpos").item(0);
+						Element firstpos = (Element) seatArea.getElementsByTagName("firstspos").item(0);
 						sa.setFirstPos(new Vertex(
 								Float.parseFloat(getTagValue("xpos", firstpos)),
 								Float.parseFloat(getTagValue("ypos", firstpos)),
 								Float.parseFloat(getTagValue("zpos", firstpos))
 						));
-						sa.setSeatPadding(Integer.parseInt(getTagValue("seatPadding", seatArea)));
-						sa.setRowPadding(Integer.parseInt(getTagValue("rowPadding", seatArea)));
+						sa.setSeatPadding(Integer.parseInt(getTagValue("seatpadding", seatArea)));
+						sa.setRowPadding(Integer.parseInt(getTagValue("rowpadding", seatArea)));
 						v.addSeatArea(sa);
 					}
 				}
