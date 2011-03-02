@@ -4,6 +4,8 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.nio.FloatBuffer;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.net.*;
@@ -19,6 +21,7 @@ import sound.SoundWrapper;
 
 import com.obj.Face;
 import com.obj.Group;
+import com.obj.Material;
 import com.obj.Vertex;
 import com.obj.WavefrontObject;
 
@@ -209,7 +212,7 @@ public class ExampleApplet extends Applet {
         URL stadiumUrl, seatsUrl;
         StadiumParser stadiumParser = new StadiumParser();
         try {
-        stadiumUrl = new URL(getCodeBase(), "../models/stadium.obj");
+        stadiumUrl = new URL(getCodeBase(), "../models/concerthall.obj");
         seatsUrl = new URL(getCodeBase(), "../models/seats.xml");
         venues = stadiumParser.parse(seatsUrl);
         System.err.println("Reading file from " + stadiumUrl.getFile());
@@ -233,16 +236,25 @@ public class ExampleApplet extends Applet {
         //GL11.glRotatef(20, 1, 0, 0);
         
         Iterator<Group> groupIt = stadium.getGroups().iterator();
+        
+        /*
+        Hashtable<String, Material> mats = stadium.getMaterials();
+        Enumeration<String> materials = mats.keys();
+        while(materials.hasMoreElements()) {
+        	String key = materials.nextElement();
+        	//System.err.println(key);
+        	Material mat = mats.get(key);
+        	//System.err.println(mat.getKd());
+        	mat.
+        }
+        */
+        
         while(groupIt.hasNext()) {
-        	Iterator<Face> faceIt = groupIt.next().getFaces().iterator();
+        	Group g = groupIt.next();
+        	Iterator<Face> faceIt = g.getFaces().iterator();
         	while(faceIt.hasNext()) {
         		Face face = faceIt.next();
-        		Vertex[] verts = face.getVertices();
-        		if(face.getType() == Face.GL_TRIANGLES) {
-        			drawTriangle(verts[0],verts[1],verts[2]);
-        		} else {
-        			drawQuad(verts[0],verts[1],verts[2],verts[3]);
-        		}
+        		drawFace(face, g.getMaterial());
         	}
         }
         GL11.glLoadIdentity();
@@ -382,61 +394,37 @@ public class ExampleApplet extends Applet {
 		
 		Display.destroy();
 	}
-	
-	public void drawTriangle(Vertex p1, Vertex p2, Vertex p3) {
-        //GL11.glLoadIdentity();
-
-        // Fill
-        GL11.glColor3f((new Double(p1.getX()).hashCode() % 273) / 273.0f,
-        		(new Double(p2.getZ()).hashCode() % 273) / 273.0f,
-        		(new Double(p3.getY()).hashCode() % 273) / 273.0f);
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-        GL11.glBegin(GL11.GL_TRIANGLES);
-        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY() - camera.getY(), p1.getZ() - camera.getZ());
-        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
-        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
-        GL11.glEnd();
-        
-        // Line
-        
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-        GL11.glPolygonOffset(1, 1);
-        GL11.glBegin(GL11.GL_TRIANGLES);
-        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY()- camera.getY(), p1.getZ() - camera.getZ());
-        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
-        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
-        GL11.glEnd();
-        
-	}
-	
-	public void drawQuad(Vertex p1, Vertex p2, Vertex p3, Vertex p4) {
-       // GL11.glLoadIdentity();
-
-        // Fill
-        GL11.glColor3f((new Double(p1.getX()).hashCode() % 273) / 273.0f,
-        		(new Double(p2.getZ()).hashCode() % 273) / 273.0f,
-        		(new Double(p3.getY()).hashCode() % 273) / 273.0f);
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY() - camera.getY(), p1.getZ() - camera.getZ());
-        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
-        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
-        GL11.glVertex3f(p4.getX() - camera.getX(), p4.getY() - camera.getY(), p4.getZ() - camera.getZ());
-        GL11.glEnd();
-        
-        // Line
-        
-        GL11.glColor3f(1.0f, 1.0f, 1.0f);
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-        GL11.glPolygonOffset(1, 1);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY() - camera.getY(), p1.getZ() - camera.getZ());
-        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
-        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
-        GL11.glVertex3f(p4.getX() - camera.getX(), p4.getY() - camera.getY(), p4.getZ() - camera.getZ());        
-        GL11.glEnd();
-        
+	public void drawFace(Face face, Material m) {
+		Vertex[] verts = face.getVertices();
+		Vertex[] norms = face.getNormals();
+		Vertex kd = m.getKd();
+		
+		GL11.glColor3f(kd.getX(), kd.getY(), kd.getZ());
+		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+		GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_FILL);
+		if(face.getType() == Face.GL_TRIANGLES) {
+	        // Fill
+	        GL11.glBegin(GL11.GL_TRIANGLES);
+	        GL11.glNormal3f(norms[0].getX(), norms[0].getY(), norms[0].getZ());
+	        GL11.glVertex3f(verts[0].getX() - camera.getX(), verts[0].getY() - camera.getY(), verts[0].getZ() - camera.getZ());
+	        GL11.glNormal3f(norms[1].getX(), norms[1].getY(), norms[1].getZ());
+	        GL11.glVertex3f(verts[1].getX() - camera.getX(), verts[1].getY() - camera.getY(), verts[1].getZ() - camera.getZ());
+	        GL11.glNormal3f(norms[2].getX(), norms[2].getY(), norms[2].getZ());
+	        GL11.glVertex3f(verts[2].getX() - camera.getX(), verts[2].getY() - camera.getY(), verts[2].getZ() - camera.getZ());
+	        GL11.glEnd();
+		} else {
+	        // Fill
+	        GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glNormal3f(norms[0].getX(), norms[0].getY(), norms[0].getZ());
+	        GL11.glVertex3f(verts[0].getX() - camera.getX(), verts[0].getY() - camera.getY(), verts[0].getZ() - camera.getZ());
+	        GL11.glNormal3f(norms[1].getX(), norms[1].getY(), norms[1].getZ());
+	        GL11.glVertex3f(verts[1].getX() - camera.getX(), verts[1].getY() - camera.getY(), verts[1].getZ() - camera.getZ());
+	        GL11.glNormal3f(norms[2].getX(), norms[2].getY(), norms[2].getZ());
+	        GL11.glVertex3f(verts[2].getX() - camera.getX(), verts[2].getY() - camera.getY(), verts[2].getZ() - camera.getZ());
+	        GL11.glNormal3f(norms[3].getX(), norms[3].getY(), norms[3].getZ());
+	        GL11.glVertex3f(verts[3].getX() - camera.getX(), verts[3].getY() - camera.getY(), verts[3].getZ() - camera.getZ());
+	        GL11.glEnd();
+		}
 	}
 
 }
