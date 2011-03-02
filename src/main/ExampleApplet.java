@@ -3,12 +3,11 @@ package main;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.FloatBuffer;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.net.*;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -21,7 +20,6 @@ import sound.SoundWrapper;
 
 import com.obj.Face;
 import com.obj.Group;
-import com.obj.Material;
 import com.obj.Vertex;
 import com.obj.WavefrontObject;
 
@@ -33,8 +31,10 @@ public class ExampleApplet extends Applet {
 	private static final long serialVersionUID = 1L;
 	Canvas display_parent;
 	WavefrontObject stadium;
-	Vertex camera;
-	boolean pright, pleft, pup, pdown, pspace, pnkey;
+	private Vertex camera;
+	private float cameraAngle;
+	private boolean topView;
+	boolean [] prevKeyboard;
 	private SoundWrapper audioPlayer;
 	private static final float audioOffset = 0.2f;
 	private SeatSoundWrapper seats;
@@ -227,14 +227,20 @@ public class ExampleApplet extends Applet {
         this.venue = venues.get(0);
         this.seats = new SeatSoundWrapper(this.venue.getSeatAreas().get(this.currentSeatArea));
         camera = new Vertex(seats.getSeatCoordVertex(this.currentRow, this.currentSeat));
+        cameraAngle = 0;
+        topView = false;
+        
         audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
+        
+        prevKeyboard = new boolean[Keyboard.KEYBOARD_SIZE];
 	}
 		
     private void render(){
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT |GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glLoadIdentity();
         GL11.glTranslatef(-camera.getX(), -camera.getY(), -camera.getZ());
-        //GL11.glRotatef(20, 1, 0, 0);
+        GL11.glRotatef(cameraAngle, 1, 0, 0);
+
         
         Iterator<Group> groupIt = stadium.getGroups().iterator();
                 
@@ -252,59 +258,50 @@ public class ExampleApplet extends Applet {
         }
         GL11.glLoadIdentity();
     }
+    
+    public boolean onKeyup(int key) {
+    	boolean temp = prevKeyboard[key];
+    	prevKeyboard[key] = Keyboard.isKeyDown(key);
+    	return temp && !prevKeyboard[key];
+    }
 
     public void controlCamera() {
-    	boolean up, down, left, right, shift, space, nkey;
-    	up = Keyboard.isKeyDown(Keyboard.KEY_UP);
-    	down = Keyboard.isKeyDown(Keyboard.KEY_DOWN);
-    	left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
-    	right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
-    	space = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
-    	nkey = Keyboard.isKeyDown(Keyboard.KEY_N);
-    	
+    	boolean up, down, left, right, shift;
     	
     	shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     	
+		if(onKeyup(Keyboard.KEY_C))
+			topView = !topView;
+		
+        if(topView) {
+        	if(cameraAngle < 90)
+        		cameraAngle = Math.min(cameraAngle + 1, 90);
+        } else {
+        	if(cameraAngle > 0)
+        		cameraAngle = Math.max(cameraAngle - 1, 0);        	
+        }
+    	
     	if(shift) {
-        	Vertex pos = new Vertex();
-        	pos.setX(camera.getX());
-        	pos.setY(camera.getY());
-        	pos.setZ(camera.getZ());
+        	up = Keyboard.isKeyDown(Keyboard.KEY_UP);
+        	down = Keyboard.isKeyDown(Keyboard.KEY_DOWN);
+        	left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
+        	right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
     		if( up && !down)
-    			pos.setZ(camera.getZ()-1); 
+    			camera.setZ(camera.getZ()-1); 
     		else if( down && !up)
-    			pos.setZ(camera.getZ()+1); 
+    			camera.setZ(camera.getZ()+1); 
     		if( left && !right)
-    			pos.setX(camera.getX()-1);
+    			camera.setX(camera.getX()-1);
     		else if( right && !left)
-    			pos.setX(camera.getX()+1);
-    		camera = pos;
+    			camera.setX(camera.getX()+1);
     		this.setListenerPosition();
     	} 
     	else {
-    		//System.out.println("GOT INTO KEYS");
     		Vertex pos = null;
-    		boolean tleft = left;
-    		boolean tright = right;
-    		boolean tup = up;
-    		boolean tdown = down;
-    		boolean tnkey = nkey;
-    		boolean tspace = space;
-    		left = !left && pleft;
-    		right = !right && pright;
-    		nkey = !nkey && pnkey;
-    		space = !space && pspace;
-    		pnkey = tnkey;
-    		pright = tright;
-    		pleft = tleft;
-    		pspace = tspace;
-    		
-
-    		
-    		up = !up && pup;
-    		down = !down && pdown;
-    		pup = tup;
-    		pdown = tdown;
+    		up = onKeyup(Keyboard.KEY_UP);
+    		down = onKeyup(Keyboard.KEY_DOWN);
+    		left = onKeyup(Keyboard.KEY_LEFT);
+    		right = onKeyup(Keyboard.KEY_RIGHT);
     		int[] seatNumRow = new int[2];
 	    	if( left && !right) {
 	    		System.out.println("LEFT");
@@ -334,7 +331,7 @@ public class ExampleApplet extends Applet {
 	    		this.currentRow = seats.incrementRow(this.currentRow);
 	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
 	    	}
-	    	else if(nkey) {
+	    	else if(onKeyup(Keyboard.KEY_N)) {
 	    		this.currentSeatArea = ++this.currentSeatArea % this.venue.getSeatAreas().size();
 	    		System.out.println(this.currentSeatArea);
 	    		seats.setSeatArea(this.venue.getSeatAreas().get(this.currentSeatArea));
@@ -342,8 +339,8 @@ public class ExampleApplet extends Applet {
 	    		this.currentRow = 0;
 	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
 	    	}
-	    	else if(space) {
-                //System.err.println("Space Pressed");
+	    	else if(onKeyup(Keyboard.KEY_SPACE)) {
+                System.err.println("Space Pressed");
                 if(audioPlayer.areAllPlaying()) {
                         audioPlayer.singlePlay(3);
                         audioPlayer.pause();
