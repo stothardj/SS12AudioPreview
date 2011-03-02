@@ -204,7 +204,7 @@ public class ExampleApplet extends Applet {
         
         URL stadiumUrl;
         try {
-        stadiumUrl = new URL(getCodeBase(), "../models/stadium3.obj");
+        stadiumUrl = new URL(getCodeBase(), "../models/stadium.obj");
         System.err.println("Reading file from " + stadiumUrl.getFile());
         stadium = new WavefrontObject(stadiumUrl.getFile());
         } catch(MalformedURLException e) {
@@ -254,9 +254,9 @@ public class ExampleApplet extends Applet {
         		Face face = faceIt.next();
         		Vertex[] verts = face.getVertices();
         		if(face.getType() == Face.GL_TRIANGLES) {
-        			new Triangle(verts[0],verts[1],verts[2]).draw(camera);
+        			drawTriangle(verts[0],verts[1],verts[2]);
         		} else {
-        			new Quad(verts[0],verts[1],verts[2],verts[3]).draw(camera);
+        			drawQuad(verts[0],verts[1],verts[2],verts[3]);
         		}
         	}
         }
@@ -360,6 +360,62 @@ public class ExampleApplet extends Applet {
 		}
 		
 		Display.destroy();
+	}
+	
+	public void drawTriangle(Vertex p1, Vertex p2, Vertex p3) {
+        GL11.glLoadIdentity();
+
+        // Fill
+        GL11.glColor3f((new Double(p1.getX()).hashCode() % 273) / 273.0f,
+        		(new Double(p2.getZ()).hashCode() % 273) / 273.0f,
+        		(new Double(p3.getY()).hashCode() % 273) / 273.0f);
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        GL11.glBegin(GL11.GL_TRIANGLES);
+        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY() - camera.getY(), p1.getZ() - camera.getZ());
+        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
+        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
+        GL11.glEnd();
+        
+        // Line
+        
+        GL11.glColor3f(1.0f, 1.0f, 1.0f);
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+        GL11.glPolygonOffset(1, 1);
+        GL11.glBegin(GL11.GL_TRIANGLES);
+        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY()- camera.getY(), p1.getZ() - camera.getZ());
+        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
+        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
+        GL11.glEnd();
+        
+	}
+	
+	public void drawQuad(Vertex p1, Vertex p2, Vertex p3, Vertex p4) {
+        GL11.glLoadIdentity();
+
+        // Fill
+        GL11.glColor3f((new Double(p1.getX()).hashCode() % 273) / 273.0f,
+        		(new Double(p2.getZ()).hashCode() % 273) / 273.0f,
+        		(new Double(p3.getY()).hashCode() % 273) / 273.0f);
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY() - camera.getY(), p1.getZ() - camera.getZ());
+        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
+        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
+        GL11.glVertex3f(p4.getX() - camera.getX(), p4.getY() - camera.getY(), p4.getZ() - camera.getZ());
+        GL11.glEnd();
+        
+        // Line
+        
+        GL11.glColor3f(1.0f, 1.0f, 1.0f);
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+        GL11.glPolygonOffset(1, 1);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex3f(p1.getX() - camera.getX(), p1.getY() - camera.getY(), p1.getZ() - camera.getZ());
+        GL11.glVertex3f(p2.getX() - camera.getX(), p2.getY() - camera.getY(), p2.getZ() - camera.getZ());
+        GL11.glVertex3f(p3.getX() - camera.getX(), p3.getY() - camera.getY(), p3.getZ() - camera.getZ());
+        GL11.glVertex3f(p4.getX() - camera.getX(), p4.getY() - camera.getY(), p4.getZ() - camera.getZ());        
+        GL11.glEnd();
+        
 	}
 
 }

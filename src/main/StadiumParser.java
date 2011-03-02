@@ -17,7 +17,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.obj.Vertex;
-
+/**
+ * Parse an xml file defining venues 
+ * @author Jake Stothard
+ *
+ */
 public class StadiumParser {
 	public StadiumParser() {}
 	public List<Venue> parse(URL url) throws ParserConfigurationException, SAXException, IOException {

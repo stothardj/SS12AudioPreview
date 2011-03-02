@@ -1,14 +1,15 @@
 package main;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.obj.Vertex;
-
+/**
+ * A group of seats
+ * @author Jake Stothard
+ *
+ */
 public class SeatArea {
 	private String name;
 	// Each list of seats is a row. Then this is a list of rows
-	private List<List<Vertex>> seats;
+	private Vertex[][] seats;
 	private Vertex firstPos;
 	private int rows, seatsPerRow, slant;
 	private float seatPadding, rowPadding;
@@ -51,18 +52,17 @@ public class SeatArea {
 	public Vertex getFirstPos() {
 		return firstPos;
 	}
-	public List<List<Vertex>> getSeats() {
+	public Vertex[][] getSeats() {
 		if(updatedSeats)
 			return seats;
 		else {
-			seats = new LinkedList<List<Vertex>>();
+			seats = new Vertex[rows][seatsPerRow];
 			float x = firstPos.getX();
 			float y = firstPos.getY();
 			float z = firstPos.getZ();
 			for(int rowNum = 0; rowNum < rows; rowNum++) {
-				List<Vertex> row = new LinkedList<Vertex>();
 				for(int seatNum = 0; seatNum < seatsPerRow; seatNum++) {
-					row.add(new Vertex(x,y,z));
+					seats[rowNum][seatNum] = new Vertex(x,y,z);
 					x += seatPadding;
 				}
 				y += rowPadding * Math.sin(slant);
