@@ -1,10 +1,8 @@
 package main;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import org.lwjgl.BufferUtils;
 
-import com.obj.Vertex;
+import org.lwjgl.BufferUtils;
 /**
  * Return a seat's 3-dimensional position in a seat area
  * @author Brian Garfinkel
@@ -30,8 +28,6 @@ public class SeatSoundWrapper {
 	}
 	
 	public FloatBuffer getSeatCoord(int row, int seatNumber) {
-		int seatsPerRow = this.parseArea.getSeatsPerRow();
-		int rows = this.parseArea.getRows();
 		if(row > this.parseArea.getRows()-1) {
 			row = this.parseArea.getRows()-1;
 		}
