@@ -212,7 +212,7 @@ public class ExampleApplet extends Applet {
         URL stadiumUrl, seatsUrl;
         StadiumParser stadiumParser = new StadiumParser();
         try {
-        stadiumUrl = new URL(getCodeBase(), "../models/concerthall.obj");
+        stadiumUrl = new URL(getCodeBase(), "../models/stadium.obj");
         seatsUrl = new URL(getCodeBase(), "../models/seats.xml");
         venues = stadiumParser.parse(seatsUrl);
         System.err.println("Reading file from " + stadiumUrl.getFile());
