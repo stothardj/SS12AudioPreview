@@ -4,6 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Venue {
+	private String name;
+	private List<SeatArea> seatAreas;
+	
 	public Venue() {
 		seatAreas = new LinkedList<SeatArea>();
 	}
@@ -26,7 +29,7 @@ public class Venue {
 	public List<SeatArea> getSeatAreas() {
 		return seatAreas;
 	}
-
-	private String name;
-	private List<SeatArea> seatAreas;
+	public int incrementSeatArea(int curSeatArea) {
+		return curSeatArea + 1 % this.seatAreas.size();
+	}
 }

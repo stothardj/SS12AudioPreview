@@ -11,7 +11,8 @@ public class SeatArea {
 	// Each list of seats is a row. Then this is a list of rows
 	private Vertex[][] seats;
 	private Vertex firstPos;
-	private int rows, seatsPerRow, slant;
+	private int rows, seatsPerRow;
+	private double slant;
 	private float seatPadding, rowPadding;
 	private boolean updatedSeats;
 	public SeatArea() {
@@ -38,11 +39,12 @@ public class SeatArea {
 	public int getSeatsPerRow() {
 		return seatsPerRow;
 	}
-	public void setSlant(int slant) {
+	public void setSlant(double slant) {
 		updatedSeats = false;
+		Math.toRadians(slant);
 		this.slant = slant;
 	}
-	public int getSlant() {
+	public double getSlant() {
 		return slant;
 	}
 	public void setFirstPos(Vertex firstPos) {
@@ -65,8 +67,9 @@ public class SeatArea {
 					seats[rowNum][seatNum] = new Vertex(x,y,z);
 					x += seatPadding;
 				}
+				x = firstPos.getX();
 				y += rowPadding * Math.sin(slant);
-				z += rowPadding * Math.cos(slant);
+				z -= rowPadding * Math.cos(slant);
 			}
 		}
 		updatedSeats = true;

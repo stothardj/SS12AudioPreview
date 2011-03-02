@@ -32,9 +32,11 @@ public class ExampleApplet extends Applet {
 	WavefrontObject stadium;
 	Vertex camera;
 	//SeatSoundWrapper seats;
-	boolean pright, pleft, pup, pdown, pspace;
+	boolean pright, pleft, pup, pdown, pspace, pnkey;
 	private SoundWrapper audioPlayer;
 	private static final float audioOffset = 0.2f;
+	private SeatSoundWrapper seats;
+	private int currentSeat, currentRow, currentSeatArea;
 	
 	/** Thread which runs the main game loop */
 	Thread gameThread;
@@ -216,40 +218,13 @@ public class ExampleApplet extends Applet {
         	e.printStackTrace();
         }
         
+        this.currentSeatArea = 0;
+        this.currentSeat = 0;
+        this.currentRow = 0;
         Venue venue = venues.get(0);
-        
-        camera = new Vertex(0,2,0);
+        this.seats = new SeatSoundWrapper(venue.getSeatAreas().get(this.currentSeatArea));
+        camera = new Vertex(seats.getSeatCoordVertex(this.currentRow, this.currentSeat));
         audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
-        
-        /*
-        float[] stadiumExtrema = extremaVerts(p, p.getObjVerts("Cube"));
-        ArrayList<Point3D> ss = p.getObjVerts("Grid");
-        float[] seatExtrema = extremaVerts(p, ss);
-        
-        Iterator<Point3D>it = ss.iterator();
-        for(int i = 0; i<6; i++)
-        	System.err.print(stadiumExtrema[i] + ", ");
-        System.err.println();
-        for(int i = 0; i<6; i++)
-        	System.err.print(seatExtrema[i] + ", ");
-        System.err.println();
-        
-        //Padding (move to xml later)
-        stadiumExtrema[5] -= 16;
-        stadiumExtrema[0] += 4;
-        stadiumExtrema[3] -= 4;
-        
-        while(it.hasNext()) {
-        	Point3D curr = it.next();
-        	if(seatExtrema[3] != seatExtrema[0])
-        		curr.x = (curr.x - seatExtrema[0]) / (seatExtrema[3] - seatExtrema[0]) * (stadiumExtrema[3] - stadiumExtrema[0]) + stadiumExtrema[0];
-        	//if(seatExtrema[4] != seatExtrema[1])
-        	//	curr.y = (curr.y - seatExtrema[1]) / (seatExtrema[4] - seatExtrema[1]) * (stadiumExtrema[4] - stadiumExtrema[1]) + stadiumExtrema[1];
-        	if(seatExtrema[5] != seatExtrema[2])
-        		curr.z = (curr.z - seatExtrema[2]) / (seatExtrema[5] - seatExtrema[2]) * (stadiumExtrema[5] - stadiumExtrema[2]) + stadiumExtrema[2];
-        }
-        seats = new SeatSoundWrapper(ss);
-        */
 	}
 		
     private void render(){
@@ -274,17 +249,19 @@ public class ExampleApplet extends Applet {
     }
 
     public void controlCamera() {
-    	boolean up, down, left, right, shift, space;
+    	boolean up, down, left, right, shift, space, nkey;
     	up = Keyboard.isKeyDown(Keyboard.KEY_UP);
     	down = Keyboard.isKeyDown(Keyboard.KEY_DOWN);
     	left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
     	right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
     	space = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
+    	nkey = Keyboard.isKeyDown(Keyboard.KEY_N);
+    	
     	
     	shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     	
     	if(shift) {
-    		Vertex pos = null;
+    		/*Vertex pos = null;
     		boolean tleft = left;
     		boolean tright = right;
     		boolean tup = up;
@@ -299,7 +276,7 @@ public class ExampleApplet extends Applet {
     		down = !down && pdown;
     		pup = tup;
     		pdown = tdown;
-    		/*
+    		
 	    	if( left && !right) {
 	    		audioPlayer.singlePlay(4);
 	    		pos = seats.prevSeatCoord();
@@ -315,33 +292,67 @@ public class ExampleApplet extends Applet {
 	    	if( pos != null ) {
 	    		System.err.println("Pos is "+pos);
 		    	camera = new Point3D(pos);
-	    	}
-	    	*/
-    	} else {
+	    	}*/
+	    	
+    	} 
+    	else {
+    		//System.out.println("GOT INTO KEYS");
+    		Vertex pos = null;
+    		boolean tleft = left;
+    		boolean tright = right;
+    		boolean tup = up;
+    		boolean tdown = down;
+    		boolean tnkey = nkey;
     		boolean tspace = space;
+    		left = !left && pleft;
+    		right = !right && pright;
+    		nkey = !nkey && pnkey;
     		space = !space && pspace;
+    		pnkey = tnkey;
+    		pright = tright;
+    		pleft = tleft;
     		pspace = tspace;
-	    	if( up && !down)
-	    		camera.setZ(camera.getZ() - 1);
-	    	else if( down && !up)
-	    		camera.setZ(camera.getZ() + 1);
-	    	if( left && !right)
-	    		camera.setX(camera.getX() - 1);
-	    	else if( right && !left)
-	    		camera.setX(camera.getX() + 1);
-	    	this.setListenerPosition();
-	    	if(space) {
-	    		System.err.println("Space Pressed");
-	    		if(audioPlayer.areAllPlaying()) {
-	    			audioPlayer.singlePlay(3);
-	    			audioPlayer.pause();
-	    		}
-	    		else {
-	    			audioPlayer.singlePlay(2);
-	    			audioPlayer.play();
-	    		}
+    		
+
+    		
+    		up = !up && pup;
+    		down = !down && pdown;
+    		pup = tup;
+    		pdown = tdown;
+    		int[] seatNumRow = new int[2];
+	    	if( left && !right) {
+	    		System.out.println("LEFT");
+	    		audioPlayer.singlePlay(4);
+	    		seatNumRow = seats.decIncSeat(this.currentSeat, this.currentRow, false);
+	    		this.currentSeat = seatNumRow[1];
+	    		this.currentRow = seatNumRow[0];
+	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    		System.out.println("Current row " + this.currentRow);
+	    		System.out.println("Current seat " + this.currentSeat);
 	    	}
-	    	//System.err.println("Camera is at "+camera);
+	    	else if( right && !left) {
+	    		System.out.println("RIGHT");
+	    		audioPlayer.singlePlay(5);
+	    		seatNumRow = seats.decIncSeat(this.currentSeat, this.currentRow, true);
+	    		this.currentSeat = seatNumRow[1];
+	    		this.currentRow = seatNumRow[0];
+	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    		System.out.println("Current row " + this.currentRow);
+	    		System.out.println("Current seat " + this.currentSeat);
+	    	}
+	    	else if( down && !up) {
+	    		this.currentRow = seats.decrementRow(this.currentRow);
+	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    	}
+	    	else if( up && !down) {
+	    		this.currentRow = seats.incrementRow(this.currentRow);
+	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    	}
+
+	    	if( pos != null ) {
+	    		System.err.println("Pos is "+pos);
+		    	camera = new Vertex(pos);
+	    	}
     	}
     }
     public void controlLight() {
