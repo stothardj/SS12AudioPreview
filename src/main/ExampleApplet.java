@@ -34,12 +34,12 @@ public class ExampleApplet extends Applet {
 	Canvas display_parent;
 	WavefrontObject stadium;
 	Vertex camera;
-	//SeatSoundWrapper seats;
 	boolean pright, pleft, pup, pdown, pspace, pnkey;
 	private SoundWrapper audioPlayer;
 	private static final float audioOffset = 0.2f;
 	private SeatSoundWrapper seats;
 	private int currentSeat, currentRow, currentSeatArea;
+	private Venue venue;
 	
 	/** Thread which runs the main game loop */
 	Thread gameThread;
@@ -212,7 +212,7 @@ public class ExampleApplet extends Applet {
         URL stadiumUrl, seatsUrl;
         StadiumParser stadiumParser = new StadiumParser();
         try {
-        stadiumUrl = new URL(getCodeBase(), "../models/concerthall.obj");
+        stadiumUrl = new URL(getCodeBase(), "../models/stadium3.obj");
         seatsUrl = new URL(getCodeBase(), "../models/seats.xml");
         venues = stadiumParser.parse(seatsUrl);
         System.err.println("Reading file from " + stadiumUrl.getFile());
@@ -224,8 +224,8 @@ public class ExampleApplet extends Applet {
         this.currentSeatArea = 0;
         this.currentSeat = 0;
         this.currentRow = 0;
-        Venue venue = venues.get(0);
-        this.seats = new SeatSoundWrapper(venue.getSeatAreas().get(this.currentSeatArea));
+        this.venue = venues.get(0);
+        this.seats = new SeatSoundWrapper(this.venue.getSeatAreas().get(this.currentSeatArea));
         camera = new Vertex(seats.getSeatCoordVertex(this.currentRow, this.currentSeat));
         audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
 	}
@@ -273,39 +273,20 @@ public class ExampleApplet extends Applet {
     	shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     	
     	if(shift) {
-    		/*Vertex pos = null;
-    		boolean tleft = left;
-    		boolean tright = right;
-    		boolean tup = up;
-    		boolean tdown = down;
-    		left = !left && pleft;
-    		right = !right && pright;
-    		pright = tright;
-    		pleft = tleft;
-
-    		
-    		up = !up && pup;
-    		down = !down && pdown;
-    		pup = tup;
-    		pdown = tdown;
-    		
-	    	if( left && !right) {
-	    		audioPlayer.singlePlay(4);
-	    		pos = seats.prevSeatCoord();
-	    	}
-	    	else if( right && !left) {
-	    		audioPlayer.singlePlay(5);
-	    		pos = seats.nextSeatCoord();
-	    	} 	else if( down && !up)
-	    		pos = seats.incSeatCoord(-30);
-	    	else if( up && !down)
-	    		pos = seats.incSeatCoord(30);
-
-	    	if( pos != null ) {
-	    		System.err.println("Pos is "+pos);
-		    	camera = new Point3D(pos);
-	    	}*/
-	    	
+        	Vertex pos = new Vertex();
+        	pos.setX(camera.getX());
+        	pos.setY(camera.getY());
+        	pos.setZ(camera.getZ());
+    		if( up && !down)
+    			pos.setZ(camera.getZ()-1); 
+    		else if( down && !up)
+    			pos.setZ(camera.getZ()+1); 
+    		if( left && !right)
+    			pos.setX(camera.getX()-1);
+    		else if( right && !left)
+    			pos.setX(camera.getX()+1);
+    		camera = pos;
+    		this.setListenerPosition();
     	} 
     	else {
     		//System.out.println("GOT INTO KEYS");
@@ -360,10 +341,30 @@ public class ExampleApplet extends Applet {
 	    		this.currentRow = seats.incrementRow(this.currentRow);
 	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
 	    	}
+	    	else if(nkey) {
+	    		this.currentSeatArea = ++this.currentSeatArea % this.venue.getSeatAreas().size();
+	    		System.out.println(this.currentSeatArea);
+	    		seats.setSeatArea(this.venue.getSeatAreas().get(this.currentSeatArea));
+	    		this.currentSeat = 0;
+	    		this.currentRow = 0;
+	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    	}
+	    	else if(space) {
+                //System.err.println("Space Pressed");
+                if(audioPlayer.areAllPlaying()) {
+                        audioPlayer.singlePlay(3);
+                        audioPlayer.pause();
+                }
+                else {
+                        audioPlayer.singlePlay(2);
+                        audioPlayer.play();
+                }
+	    	}
 
 	    	if( pos != null ) {
 	    		System.err.println("Pos is "+pos);
 		    	camera = new Vertex(pos);
+		    	this.setListenerPosition();
 	    	}
     	}
     }
@@ -391,7 +392,7 @@ public class ExampleApplet extends Applet {
 			
 			//System.err.println("X: "+camera.x+ "Y: "+camera.y+"Z:"+camera.z);
 		}
-		
+		audioPlayer.killALData();
 		Display.destroy();
 	}
 	public void drawFace(Face face, Material m) {

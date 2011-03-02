@@ -11,6 +11,7 @@ public class AudioSource {
 	private FloatBuffer sourceVel;
 	private boolean isPlaying;
 	private boolean skipPlay;
+	private String fileName;
 
 	public AudioSource(FloatBuffer sourcePos, FloatBuffer sourceVel) {
 		this.sourcePos = sourcePos;
@@ -69,5 +70,11 @@ public class AudioSource {
 	}
 	public boolean isSkipped() {
 		return this.skipPlay;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	public String getFileName() {
+		return this.fileName;
 	}
 }

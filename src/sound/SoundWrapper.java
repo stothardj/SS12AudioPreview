@@ -61,9 +61,11 @@ public class SoundWrapper {
 				.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }));
 		WaveData waveFile = WaveData.create(fileName);
 		if(waveFile == null) {
+			this.curNumSources++;
 			return false;
 		}
 		sources[this.curNumSources].setPlaying(false);
+		sources[this.curNumSources].setFileName(fileName);
 		if(skip) {
 			sources[this.curNumSources].setSkip(skip);
 		}
@@ -169,7 +171,7 @@ public class SoundWrapper {
 		}		
 	}
 	
-	void killALData() {
+	public void killALData() {
 		AL10.alDeleteSources(source);
 		AL10.alDeleteBuffers(buffer);
 	}
@@ -184,6 +186,8 @@ public class SoundWrapper {
 	}
 	public void singlePlay(int sourceIndex) {
 		if(sourceIndex < this.curNumSources && sourceIndex >= 0) {
+			System.out.println("Index: " + sourceIndex);
+			System.out.println(sources[sourceIndex].getFileName());
 				AL10.alSourcePlay(source.get(sourceIndex));
 		}
 	}

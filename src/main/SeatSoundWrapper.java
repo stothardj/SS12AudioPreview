@@ -16,6 +16,10 @@ public class SeatSoundWrapper {
 	public SeatSoundWrapper(SeatArea parseArea) {
 		this.parseArea = parseArea;
 	}
+	
+	public void setSeatArea(SeatArea parseArea) {
+		this.parseArea = parseArea;
+	}
 
 	public FloatBuffer getSeatCoord(int index) {
 		int seatsPerRow = this.parseArea.getSeatsPerRow();

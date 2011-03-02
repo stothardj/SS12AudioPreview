@@ -7,28 +7,28 @@
     <areaname>Main</areaname>
     <nrows>15</nrows>
     <firstspos>
-      <xpos>-11</xpos>
+      <xpos>-7.5</xpos>
       <ypos>2.2</ypos>
       <zpos>3</zpos>
     </firstspos>
     <seatsprow>20</seatsprow>
-    <slant>0.2</slant>
-    <seatpadding>1.1</seatpadding>
-    <rowpadding>2</rowpadding>
+    <slant>-0.08</slant>
+    <seatpadding>0.8</seatpadding>
+    <rowpadding>1</rowpadding>
   </seatarea>
 
   <seatarea>
     <areaname>Balcony</areaname>
     <nrows>10</nrows>
     <firstspos>
-      <xpos>10</xpos>
-      <ypos>14</ypos>
-      <zpos>3</zpos>
+      <xpos>-10.1</xpos>
+      <ypos>5</ypos>
+      <zpos>13</zpos>
     </firstspos>
     <seatsprow>20</seatsprow>
-    <slant>15</slant>
-    <seatpadding>3</seatpadding>
-    <rowpadding>2</rowpadding>
+    <slant>-0.08</slant>
+    <seatpadding>1.05</seatpadding>
+    <rowpadding>1</rowpadding>
   </seatarea>
 
 </venue>
