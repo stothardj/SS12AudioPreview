@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 
 import com.obj.Vertex;
-
+/**
+ * Return a seat's 3-dimensional position in a seat area
+ * @author Brian Garfinkel
+ *
+ */
 public class SeatSoundWrapper {
 	private SeatArea parseArea;
 
