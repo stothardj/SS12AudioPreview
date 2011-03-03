@@ -41,11 +41,10 @@ public class SeatArea {
 	}
 	public void setSlant(double slant) {
 		updatedSeats = false;
-		Math.toRadians(slant);
-		this.slant = slant;
+		this.slant = Math.toRadians(slant);
 	}
 	public double getSlant() {
-		return slant;
+		return Math.toDegrees(slant);
 	}
 	public void setFirstPos(Vertex firstPos) {
 		updatedSeats = false;
@@ -68,8 +67,8 @@ public class SeatArea {
 					x += seatPadding;
 				}
 				x = firstPos.getX();
-				y += rowPadding * Math.sin(slant);
-				z -= rowPadding * Math.cos(slant);
+				y += (rowPadding * Math.sin(slant));
+				z -= (rowPadding * Math.cos(slant));
 			}
 		}
 		updatedSeats = true;

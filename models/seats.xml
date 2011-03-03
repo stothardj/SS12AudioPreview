@@ -8,25 +8,25 @@
     <nrows>15</nrows>
     <firstspos>
       <xpos>-7.5</xpos>
-      <ypos>2.2</ypos>
-      <zpos>3</zpos>
+      <ypos>1</ypos>
+      <zpos>8</zpos>
     </firstspos>
     <seatsprow>20</seatsprow>
-    <slant>-0.08</slant>
+    <slant>0</slant>
     <seatpadding>0.8</seatpadding>
-    <rowpadding>1</rowpadding>
+    <rowpadding>1.2</rowpadding>
   </seatarea>
 
   <seatarea>
     <areaname>Balcony</areaname>
-    <nrows>10</nrows>
+    <nrows>5</nrows>
     <firstspos>
       <xpos>-10.1</xpos>
       <ypos>5</ypos>
-      <zpos>13</zpos>
+      <zpos>13.5</zpos>
     </firstspos>
     <seatsprow>20</seatsprow>
-    <slant>-0.08</slant>
+    <slant>-20</slant>
     <seatpadding>1.05</seatpadding>
     <rowpadding>1</rowpadding>
   </seatarea>

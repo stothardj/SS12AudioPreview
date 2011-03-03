@@ -41,6 +41,7 @@ public class ExampleApplet extends Applet {
 	private SeatSoundWrapper seats;
 	private int currentSeat, currentRow, currentSeatArea;
 	private Venue venue;
+	private static final float HEAD_HEIGHT = 1.0f;
 	
 	/** Thread which runs the main game loop */
 	Thread gameThread;
@@ -223,8 +224,9 @@ public class ExampleApplet extends Applet {
         this.currentRow = 0;
         this.venue = venues.get(0);
         this.seats = new SeatSoundWrapper(this.venue.getSeatAreas().get(this.currentSeatArea));
-        camera = new Vertex(seats.getSeatCoordVertex(this.currentRow, this.currentSeat));
-        listener = new Vertex(camera);
+        listener = new Vertex(seats.getSeatCoordVertex(this.currentRow, this.currentSeat));
+        camera = new Vertex(listener);
+        camera.setY(camera.getY() + HEAD_HEIGHT);
         cameraAngle = 0;
         cameraAngle2 = 0;
         topView = true;
@@ -242,15 +244,18 @@ public class ExampleApplet extends Applet {
         GL11.glTranslatef(-camera.getX(), -camera.getY(), -camera.getZ());
         drawModel(stadium);
         
-        SeatArea sa = seats.getSeatArea();
-        for(int c = 0; c < sa.getSeatsPerRow(); c++)
-        	for(int r = 0; r < sa.getRows(); r++) {
-        		Vertex seat = sa.getSeats()[r][c];
-        		GL11.glTranslatef(seat.getX(), seat.getY(), seat.getZ());
-        		drawModel(chair);
-        		GL11.glTranslatef(-seat.getX(), -seat.getY(), -seat.getZ());
-        	}
-        
+        Iterator<SeatArea> saIt = venue.getSeatAreas().iterator();
+        while(saIt.hasNext()) {
+	        SeatArea sa = saIt.next();
+	        //sa.setSlant(sa.getSlant()+1);
+	        for(int c = 0; c < sa.getSeatsPerRow(); c++)
+	        	for(int r = 0; r < sa.getRows(); r++) {
+	        		Vertex seat = sa.getSeats()[r][c];
+	        		GL11.glTranslatef(seat.getX(), seat.getY(), seat.getZ());
+	        		drawModel(chair);
+	        		GL11.glTranslatef(-seat.getX(), -seat.getY(), -seat.getZ());
+	        	}
+        }
         GL11.glTranslatef(listener.getX(), listener.getY(), listener.getZ());
         drawModel(marker);
         GL11.glLoadIdentity();
@@ -297,6 +302,8 @@ public class ExampleApplet extends Applet {
         		camera.setY(camera.getY() - 0.4f);
         	}
         }
+        
+        
     	
     	if(shift) {
         	up = Keyboard.isKeyDown(Keyboard.KEY_UP) ^ topView;
@@ -317,7 +324,7 @@ public class ExampleApplet extends Applet {
     			camera.setX(camera.getX()+1);
     			listener.setX(camera.getX());
     		}
-    		this.setListenerPosition(camera);
+    		this.setListenerPosition(listener);
     	} 
     	else {
     		Vertex pos = null;
@@ -376,10 +383,12 @@ public class ExampleApplet extends Applet {
 
 	    	if( pos != null ) {
 	    		System.err.println("Pos is "+pos);
+	    		float camlistdiff = camera.getY() - listener.getY();
 		    	listener = new Vertex(pos);
 		    	camera.setX(listener.getX());
+		    	camera.setY(listener.getY() + camlistdiff);
 		    	camera.setZ(listener.getZ());
-		    	this.setListenerPosition(pos);
+		    	this.setListenerPosition(listener);
 	    	}
     	}
     }
@@ -390,16 +399,12 @@ public class ExampleApplet extends Applet {
     	GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
 */
     }
-    public void setListenerPosition(Vertex pos) { 	
-    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{pos.getX(), pos.getY(), pos.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{pos.getX(), pos.getY(), pos.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{pos.getX(), pos.getY(), pos.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{pos.getX(), pos.getY(), pos.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{pos.getX(), pos.getY(), pos.getZ()}).rewind());
-/*    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());*/
+    public void setListenerPosition(Vertex music) { 	
+    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
     }
 	public void gameLoop() {
 		while(running) {
