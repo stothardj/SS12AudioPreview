@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -294,7 +295,7 @@ public class ExampleApplet extends Applet {
     			camera.setX(camera.getX()-1);
     		else if( right && !left)
     			camera.setX(camera.getX()+1);
-    		this.setListenerPosition();
+    		this.setListenerPosition(camera);
     	} 
     	else {
     		Vertex pos = null;
@@ -354,7 +355,7 @@ public class ExampleApplet extends Applet {
 	    	if( pos != null ) {
 	    		System.err.println("Pos is "+pos);
 		    	camera = new Vertex(pos);
-		    	this.setListenerPosition();
+		    	this.setListenerPosition(pos);
 	    	}
     	}
     }
@@ -365,12 +366,12 @@ public class ExampleApplet extends Applet {
     	GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
 */
     }
-    public void setListenerPosition() { 	
-    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
-    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()*0.9f}).rewind());
+    public void setListenerPosition(Vertex pos) { 	
+    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{pos.getX(), pos.getY(), pos.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());
+    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}).rewind());
     }
 	public void gameLoop() {
 		while(running) {
