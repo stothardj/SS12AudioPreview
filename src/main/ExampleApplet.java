@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -24,20 +23,20 @@ import com.obj.Group;
 import com.obj.Vertex;
 import com.obj.WavefrontObject;
 
+/**
+ * Main applet class
+ * @author AudioPreview
+ *
+ */
 public class ExampleApplet extends Applet {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2044141944829708675L;
 	Canvas display_parent;
-	WavefrontObject stadium;
-	private Vertex camera;
+	WavefrontObject stadium, marker;
+	private Vertex camera, listener;
 	private float cameraAngle;
 	private boolean topView;
 	boolean [] prevKeyboard;
 	private SoundWrapper audioPlayer;
-	private static final float audioOffset = 0.2f;
 	private SeatSoundWrapper seats;
 	private int currentSeat, currentRow, currentSeatArea;
 	private Venue venue;
@@ -80,13 +79,8 @@ public class ExampleApplet extends Applet {
 		}
 	}
 
-	public void start() {
-		
-	}
-
-	public void stop() {
-		
-	}
+	public void start() {}
+	public void stop() {}
 	
 	/**
 	 * Applet Destroy method will remove the canvas, 
@@ -104,9 +98,6 @@ public class ExampleApplet extends Applet {
 		setLayout(new BorderLayout());
 		try {
 			display_parent = new Canvas() {
-				/**
-				 * 
-				 */
 				private static final long serialVersionUID = 8561150810006220384L;
 				public final void addNotify() {
 					super.addNotify();
@@ -154,7 +145,7 @@ public class ExampleApplet extends Applet {
 
 	protected void initGL() {
 		int w, h;
-		FloatBuffer light_ambient = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 1.0f});
+		FloatBuffer light_ambient = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.200f, 0.200f, 0.200f, 1.0f});
 		
 		FloatBuffer light_diffuse = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.600f, 0.600f, 0.600f, 1.0f});
 		FloatBuffer light_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.100f, 0.100f, 0.100f, 1.0f});
@@ -210,14 +201,16 @@ public class ExampleApplet extends Applet {
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
         
         List<Venue> venues = null;
-        URL stadiumUrl, seatsUrl;
+        URL stadiumUrl, seatsUrl, markerUrl;
         StadiumParser stadiumParser = new StadiumParser();
         try {
         stadiumUrl = new URL(getCodeBase(), "../models/stadium.obj");
         seatsUrl = new URL(getCodeBase(), "../models/seats.xml");
+        markerUrl = new URL(getCodeBase(), "../models/marker.obj");
         venues = stadiumParser.parse(seatsUrl);
         System.err.println("Reading file from " + stadiumUrl.getFile());
         stadium = new WavefrontObject(stadiumUrl.getFile());
+        marker = new WavefrontObject(markerUrl.getFile());
         } catch(Exception e) {
         	e.printStackTrace();
         }
@@ -228,8 +221,9 @@ public class ExampleApplet extends Applet {
         this.venue = venues.get(0);
         this.seats = new SeatSoundWrapper(this.venue.getSeatAreas().get(this.currentSeatArea));
         camera = new Vertex(seats.getSeatCoordVertex(this.currentRow, this.currentSeat));
+        listener = new Vertex(camera);
         cameraAngle = 0;
-        topView = false;
+        topView = true;
         
         audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
         
@@ -239,25 +233,26 @@ public class ExampleApplet extends Applet {
     private void render(){
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT |GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glLoadIdentity();
-        GL11.glTranslatef(-camera.getX(), -camera.getY(), -camera.getZ());
         GL11.glRotatef(cameraAngle, 1, 0, 0);
-
-        
-        Iterator<Group> groupIt = stadium.getGroups().iterator();
-                
+        GL11.glTranslatef(-camera.getX(), -camera.getY(), -camera.getZ());
+        drawModel(stadium);
+        GL11.glTranslatef(listener.getX(), listener.getY(), listener.getZ());
+        drawModel(marker);
+        GL11.glLoadIdentity();
+    }
+    
+    public void drawModel(WavefrontObject w) {
+        Iterator<Group> groupIt = w.getGroups().iterator();
         while(groupIt.hasNext()) {
         	Group g = groupIt.next();
     		Vertex kd = g.getMaterial().getKd();        		
     		GL11.glColor3f(kd.getX(), kd.getY(), kd.getZ());
-
         	Iterator<Face> faceIt = g.getFaces().iterator();
         	while(faceIt.hasNext()) {
         		Face face = faceIt.next();
-
         		drawFace(face);
         	}
-        }
-        GL11.glLoadIdentity();
+        }    	
     }
     
     public boolean onKeyup(int key) {
@@ -275,11 +270,15 @@ public class ExampleApplet extends Applet {
 			topView = !topView;
 		
         if(topView) {
-        	if(cameraAngle < 90)
+        	if(cameraAngle < 90) {
         		cameraAngle = Math.min(cameraAngle + 1, 90);
+        		camera.setY(camera.getY() + 0.4f);
+        	}
         } else {
-        	if(cameraAngle > 0)
-        		cameraAngle = Math.max(cameraAngle - 1, 0);        	
+        	if(cameraAngle > 0) {
+        		cameraAngle = Math.max(cameraAngle - 1, 0);
+        		camera.setY(camera.getY() - 0.4f);
+        	}
         }
     	
     	if(shift) {
@@ -287,14 +286,20 @@ public class ExampleApplet extends Applet {
         	down = Keyboard.isKeyDown(Keyboard.KEY_DOWN);
         	left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
         	right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
-    		if( up && !down)
-    			camera.setZ(camera.getZ()-1); 
-    		else if( down && !up)
-    			camera.setZ(camera.getZ()+1); 
-    		if( left && !right)
+    		if( up && !down) {
+    			camera.setZ(camera.getZ()-1);
+    			listener.setZ(camera.getZ());
+    		} else if( down && !up) {
+    			camera.setZ(camera.getZ()+1);
+    			listener.setZ(camera.getZ());
+    		}
+    		if( left && !right) {
     			camera.setX(camera.getX()-1);
-    		else if( right && !left)
+    			listener.setX(camera.getX());
+    		} else if( right && !left) {
     			camera.setX(camera.getX()+1);
+    			listener.setX(camera.getX());
+    		}
     		this.setListenerPosition(camera);
     	} 
     	else {
@@ -354,7 +359,9 @@ public class ExampleApplet extends Applet {
 
 	    	if( pos != null ) {
 	    		System.err.println("Pos is "+pos);
-		    	camera = new Vertex(pos);
+		    	listener = new Vertex(pos);
+		    	camera.setX(listener.getX());
+		    	camera.setZ(listener.getZ());
 		    	this.setListenerPosition(pos);
 	    	}
     	}
@@ -391,6 +398,7 @@ public class ExampleApplet extends Applet {
 		Vertex[] norms = face.getNormals();
 		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_FILL);
+		GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_POINT);
 		if(face.getType() == Face.GL_TRIANGLES) {
 	        // Fill
 	        GL11.glBegin(GL11.GL_TRIANGLES);
