@@ -32,6 +32,7 @@ if ! (echo $SIGNER_PASSWORD | jarsigner $JAR_LOC $SIGNER_STORE 2> /dev/null)
 then
   fail_and_quit "signing jar"
 fi
+
 echo "***SUCCESS"
 echo "jar placed at " $JAR_LOC 
 
