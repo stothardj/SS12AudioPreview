@@ -139,4 +139,7 @@ public class SeatSoundWrapper {
 			return row+1;
 		}
 	}
+	public SeatArea getSeatArea() {
+		return this.parseArea;
+	}
 }

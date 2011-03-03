@@ -31,7 +31,7 @@ import com.obj.WavefrontObject;
 public class ExampleApplet extends Applet {
 	private static final long serialVersionUID = -2044141944829708675L;
 	Canvas display_parent;
-	WavefrontObject stadium, marker;
+	WavefrontObject stadium, marker, chair;
 	private Vertex camera, listener;
 	private float cameraAngle;
 	private float cameraAngle2;
@@ -202,16 +202,18 @@ public class ExampleApplet extends Applet {
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
         
         List<Venue> venues = null;
-        URL stadiumUrl, seatsUrl, markerUrl;
+        URL stadiumUrl, seatsUrl, markerUrl, chairUrl;
         StadiumParser stadiumParser = new StadiumParser();
         try {
         stadiumUrl = new URL(getCodeBase(), "../models/stadium.obj");
         seatsUrl = new URL(getCodeBase(), "../models/seats.xml");
         markerUrl = new URL(getCodeBase(), "../models/marker.obj");
+        chairUrl = new URL(getCodeBase(),"../models/chair.obj");
         venues = stadiumParser.parse(seatsUrl);
         System.err.println("Reading file from " + stadiumUrl.getFile());
         stadium = new WavefrontObject(stadiumUrl.getFile());
         marker = new WavefrontObject(markerUrl.getFile());
+        chair = new WavefrontObject(chairUrl.getFile());
         } catch(Exception e) {
         	e.printStackTrace();
         }
@@ -239,6 +241,16 @@ public class ExampleApplet extends Applet {
         GL11.glRotatef(cameraAngle2, 0, 1, 0);
         GL11.glTranslatef(-camera.getX(), -camera.getY(), -camera.getZ());
         drawModel(stadium);
+        
+        SeatArea sa = seats.getSeatArea();
+        for(int c = 0; c < sa.getSeatsPerRow(); c++)
+        	for(int r = 0; r < sa.getRows(); r++) {
+        		Vertex seat = sa.getSeats()[r][c];
+        		GL11.glTranslatef(seat.getX(), seat.getY(), seat.getZ());
+        		drawModel(chair);
+        		GL11.glTranslatef(-seat.getX(), -seat.getY(), -seat.getZ());
+        	}
+        
         GL11.glTranslatef(listener.getX(), listener.getY(), listener.getZ());
         drawModel(marker);
         GL11.glLoadIdentity();
