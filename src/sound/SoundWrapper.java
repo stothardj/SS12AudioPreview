@@ -61,6 +61,7 @@ public class SoundWrapper {
 				.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }));
 		WaveData waveFile = WaveData.create(fileName);
 		if(waveFile == null) {
+			System.err.println("Bad WAV file.");
 			this.curNumSources++;
 			return false;
 		}

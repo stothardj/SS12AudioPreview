@@ -131,7 +131,7 @@ public class ExampleApplet extends Applet {
 			play = new URL(getCodeBase(), "../audio/play.wav");
 			pause = new URL(getCodeBase(), "../audio/pause.wav");
 			prevseat = new URL(getCodeBase(), "../audio/prevseat.wav");
-			nextseat = new URL(getCodeBase(), ".../audio/nextseat.wav");
+			nextseat = new URL(getCodeBase(), "../audio/nextseat.wav");
 			audioPlayer.initializeSource(portalMusic.getFile(), true, false);
 			audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
 			audioPlayer.initializeSource(portalVocals.getFile(), true, false);
