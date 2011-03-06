@@ -2,8 +2,13 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script language="text/javascript">
+      function focusApplet() {
+      document.getElementsByTagName( "applet" )[0].focus();
+      }
+    </script>
   </head>
-  <body>
+  <body onload="focusApplet()">
     <div id="content">
       <h1>Welcome to Audio Preview!</h1>
 
@@ -19,9 +24,17 @@
 	  </td>
 	  <td>
 	    <h2>Current venue:</h2>
+	    <applet code="org.lwjgl.util.applet.AppletLoader"
+		    archive="lwjgl_util_applet.jar"
+		    codebase="." 
+		    width="800" height="600">
+	      <param name="al_title" value="ss12applet">
+	      <param name="al_jars" value="New.jar, objimport.jar, lwjgl.jar, lwjgl_util.jar">
+	      <param name="al_main" value="main.ExampleApplet">
+	      <param name="al_logo" value="logo.jpg">
+	      <param name="al_progressbar" value="logo.jpg">
+	      <param name="al_linux" value="linux_natives.jar">
 
-	    <applet code="main.ExampleApplet.class" archive="TestS.jar" width="800" height="600"  >
-	      Please install java to use Audio Preview
 	    </applet>
 
 	  </td>
