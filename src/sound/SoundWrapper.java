@@ -2,12 +2,11 @@ package sound;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.AL11;
-import org.lwjgl.openal.ALC10;
 import org.lwjgl.util.WaveData;
 
 public class SoundWrapper {
@@ -61,6 +60,7 @@ public class SoundWrapper {
 				.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }));
 		WaveData waveFile = WaveData.create(fileName);
 		if(waveFile == null) {
+			System.err.println("Bad WAV file.");
 			this.curNumSources++;
 			return false;
 		}

@@ -1,8 +1,6 @@
 package sound;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import org.lwjgl.BufferUtils;
 
 public class AudioSource {
 	/** Position of the listener. */
