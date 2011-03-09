@@ -8,6 +8,8 @@ import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
 import java.util.List;
+import java.lang.ClassLoader;
+import java.io.InputStream;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -15,6 +17,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+
 
 import sound.SoundWrapper;
 
@@ -42,6 +45,19 @@ public class ExampleApplet extends Applet {
 	private int currentSeat, currentRow, currentSeatArea;
 	private Venue venue;
 	private static final float HEAD_HEIGHT = 1.0f;
+
+  public static final String PORTAL_MUSIC_P   = "still_music.wav";
+  public static final String PORTAL_VOCALS_P  = "still_vocals.wav";
+  public static final String PLAY_P           = "play.wav";
+  public static final String PAUSE_P          = "pause.wav";
+  public static final String PREVSEAT_P       = "prevseat.wav";
+  public static final String NEXTSEAT_P       = "nextseat.wav";
+
+  public static final String STADIUM_P        = "stadium.obj";
+  public static final String SEATS_P          = "seats.xml";
+  public static final String MARKER_P         = "marker.obj";
+  public static final String CHAIR_P          = "chair.obj";
+
 	
 	/** Thread which runs the main game loop */
 	Thread gameThread;
@@ -122,27 +138,28 @@ public class ExampleApplet extends Applet {
 		}
 	}
 	
+
 	public void audioInit() {
 		audioPlayer = new SoundWrapper(6);
-		URL portalMusic, portalVocals, play, pause, prevseat, nextseat;
-		try {
-			portalMusic = new URL(getCodeBase(), "../audio/Still Alive from Portal (Music Only synced).wav");
-			portalVocals = new URL(getCodeBase(), "../audio/Still Alive from Portal (Vocals Only).wav");
-			play = new URL(getCodeBase(), "../audio/play.wav");
-			pause = new URL(getCodeBase(), "../audio/pause.wav");
-			prevseat = new URL(getCodeBase(), "../audio/prevseat.wav");
-			nextseat = new URL(getCodeBase(), "../audio/nextseat.wav");
-			audioPlayer.initializeSource(portalMusic.getFile(), true, false);
-			audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
-			audioPlayer.initializeSource(portalVocals.getFile(), true, false);
-			audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -21.000f}));
-			audioPlayer.initializeSource(play.getFile(), false, true);
-			audioPlayer.initializeSource(pause.getFile(), false, true);
-			audioPlayer.initializeSource(prevseat.getFile(), false, true);
-			audioPlayer.initializeSource(nextseat.getFile(), false, true);
-		} catch(MalformedURLException e) {
-			e.printStackTrace();
-		}
+    InputStream portal_music_is, portal_vocals_is, pause_is, play_is, prevseat_is, nextseat_is;
+    ClassLoader cl = ExampleApplet.class.getClassLoader();
+    
+    portal_music_is   = cl.getResourceAsStream(PORTAL_MUSIC_P);
+    portal_vocals_is  = cl.getResourceAsStream(PORTAL_VOCALS_P);
+    play_is           = cl.getResourceAsStream(PLAY_P);
+    pause_is          = cl.getResourceAsStream(PAUSE_P);
+    prevseat_is       = cl.getResourceAsStream(PREVSEAT_P);
+    nextseat_is       = cl.getResourceAsStream(NEXTSEAT_P);
+
+		audioPlayer.initializeSource(PORTAL_MUSIC_P, portal_music_is, true, false);
+		audioPlayer.initializeSource(PORTAL_VOCALS_P, portal_vocals_is, true, false);
+		audioPlayer.initializeSource(PLAY_P, play_is, false, true);
+		audioPlayer.initializeSource(PAUSE_P, pause_is, false, true);
+		audioPlayer.initializeSource(PREVSEAT_P, prevseat_is, false, true);
+		audioPlayer.initializeSource(NEXTSEAT_P, nextseat_is, false, true);
+
+		audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
+		audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -21.000f}));
 	}
 
 	protected void initGL() {
@@ -202,19 +219,19 @@ public class ExampleApplet extends Applet {
         
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
         
+
         List<Venue> venues = null;
-        URL stadiumUrl, seatsUrl, markerUrl, chairUrl;
         StadiumParser stadiumParser = new StadiumParser();
+
+        String path =  ExampleApplet.class.getClassLoader().getResource(PORTAL_MUSIC_P).getFile();
+        path =  path.replaceFirst("file:(.+?)([a-zA-Z]+\\.jar.*)", "$1");
+        System.out.println("PATH: " + path);
+    
         try {
-        stadiumUrl = new URL(getCodeBase(), "../models/stadium.obj");
-        seatsUrl = new URL(getCodeBase(), "../models/seats.xml");
-        markerUrl = new URL(getCodeBase(), "../models/marker.obj");
-        chairUrl = new URL(getCodeBase(),"../models/chair.obj");
-        venues = stadiumParser.parse(seatsUrl);
-        System.err.println("Reading file from " + stadiumUrl.getFile());
-        stadium = new WavefrontObject(stadiumUrl.getFile());
-        marker = new WavefrontObject(markerUrl.getFile());
-        chair = new WavefrontObject(chairUrl.getFile());
+          venues = stadiumParser.parse(path + SEATS_P);
+          stadium = new WavefrontObject(path + STADIUM_P);
+          marker = new WavefrontObject(path + MARKER_P);
+          chair = new WavefrontObject(path + CHAIR_P);
         } catch(Exception e) {
         	e.printStackTrace();
         }

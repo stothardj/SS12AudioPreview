@@ -3,6 +3,8 @@ package sound;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import java.io.InputStream;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
@@ -50,7 +52,7 @@ public class SoundWrapper {
 		}
 	}
 	
-	public boolean initializeSource(String fileName, boolean loop, boolean skip) {
+	public boolean initializeSource(String fileName, InputStream is, boolean loop, boolean skip) {
 		if(this.curNumSources >= numSources) {
 			return false;
 		}
@@ -58,7 +60,7 @@ public class SoundWrapper {
 		sources[this.curNumSources] = new AudioSource((FloatBuffer) BufferUtils
 				.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }), (FloatBuffer) BufferUtils
 				.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f }));
-		WaveData waveFile = WaveData.create(fileName);
+		WaveData waveFile = WaveData.create(is);
 		if(waveFile == null) {
 			System.err.println("Bad WAV file.");
 			this.curNumSources++;

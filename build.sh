@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAR_LOC='../website/ss12ap.jar'
+JAR_LOC='../website/New.jar'
 SIGNER_PASSWORD='uclass12'
 SIGNER_STORE='uclass12'
 
@@ -21,9 +21,9 @@ then
 fi
 
 CLASS_FILES=$(find ./ -iname "*.class") 
-#AUDIO_FILES=$(find src -iname "*.wav")
+#AUDIO_FILES=$(find ./ -iname "*.wav")
 
-if ! jar cvf $JAR_LOC $CLASS_FILES #$AUDIO_FILES
+if ! jar cvf $JAR_LOC $CLASS_FILES #$AUDIO_FILES #models
 then
   fail_and_quit "creating jar"
 fi
@@ -33,8 +33,10 @@ then
   fail_and_quit "signing jar"
 fi
 
+#lzma $JAR_LOC
+
 echo "***SUCCESS"
-echo "jar placed at " $JAR_LOC 
+echo "jar placed at " $JAR_LOC
 
 if [ 'c' = "$1" ] 
 then

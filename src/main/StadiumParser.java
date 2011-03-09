@@ -24,8 +24,8 @@ import com.obj.Vertex;
  */
 public class StadiumParser {
 	public StadiumParser() {}
-	public List<Venue> parse(URL url) throws ParserConfigurationException, SAXException, IOException {
-		File fXmlFile = new File(url.getFile());
+	public List<Venue> parse(String fn) throws ParserConfigurationException, SAXException, IOException {
+		File fXmlFile = new File(fn);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(fXmlFile);
