@@ -223,10 +223,10 @@ public class ExampleApplet extends Applet {
         List<Venue> venues = null;
         StadiumParser stadiumParser = new StadiumParser();
 
-        String path =  ExampleApplet.class.getClassLoader().getResource(PORTAL_MUSIC_P).getFile();
+        String path =  ExampleApplet.class.getClassLoader().getResource(SEATS_P).getFile();        
         path =  path.replaceFirst("file:(.+?)([a-zA-Z]+\\.jar.*)", "$1");
         System.out.println("PATH: " + path);
-    
+        System.out.println("PATH:" + ExampleApplet.class.getClassLoader().getResource(SEATS_P).getFile());
         try {
           venues = stadiumParser.parse(path + SEATS_P);
           stadium = new WavefrontObject(path + STADIUM_P);

@@ -13,5 +13,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/usr/share/java/objimport.jar"/>
+	<classpathentry kind="lib" path="/home/jake/workspace/SS12AudioPreview/website/audio.jar"/>
+	<classpathentry kind="lib" path="/home/jake/workspace/SS12AudioPreview/website/jinput.jar"/>
+	<classpathentry kind="lib" path="/home/jake/workspace/SS12AudioPreview/website/models.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
