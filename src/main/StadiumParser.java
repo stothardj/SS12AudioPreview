@@ -2,7 +2,6 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +23,15 @@ import com.obj.Vertex;
  */
 public class StadiumParser {
 	public StadiumParser() {}
+	/**
+	 * Parse an xml file representing a stadium
+	 * Due to time constraints it does no error checking
+	 * @param fn the name of the xml file to return
+	 * @return a list of venues defined in the xml file
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	public List<Venue> parse(String fn) throws ParserConfigurationException, SAXException, IOException {
 		File fXmlFile = new File(fn);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

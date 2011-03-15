@@ -3,13 +3,10 @@ package main;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
 import java.util.List;
-import java.lang.ClassLoader;
-import java.io.InputStream;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -17,7 +14,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
-
 
 import sound.SoundWrapper;
 
