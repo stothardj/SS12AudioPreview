@@ -139,28 +139,29 @@ public class ExampleApplet extends Applet {
 	}
 	
 
-	public void audioInit() {
-		audioPlayer = new SoundWrapper(6);
-    InputStream portal_music_is, portal_vocals_is, pause_is, play_is, prevseat_is, nextseat_is;
-    ClassLoader cl = ExampleApplet.class.getClassLoader();
+    public void audioInit() {
+	audioPlayer = new SoundWrapper(6);
+	InputStream portal_music_is, portal_vocals_is, pause_is, play_is, prevseat_is, nextseat_is;
+	ClassLoader cl = ExampleApplet.class.getClassLoader();
     
-    portal_music_is   = cl.getResourceAsStream(PORTAL_MUSIC_P);
-    portal_vocals_is  = cl.getResourceAsStream(PORTAL_VOCALS_P);
-    play_is           = cl.getResourceAsStream(PLAY_P);
-    pause_is          = cl.getResourceAsStream(PAUSE_P);
-    prevseat_is       = cl.getResourceAsStream(PREVSEAT_P);
-    nextseat_is       = cl.getResourceAsStream(NEXTSEAT_P);
+	portal_music_is   = cl.getResourceAsStream(PORTAL_MUSIC_P);
+	portal_vocals_is  = cl.getResourceAsStream(PORTAL_VOCALS_P);
+	play_is           = cl.getResourceAsStream(PLAY_P);
+	pause_is          = cl.getResourceAsStream(PAUSE_P);
+	prevseat_is       = cl.getResourceAsStream(PREVSEAT_P);
+	nextseat_is       = cl.getResourceAsStream(NEXTSEAT_P);
 
-		audioPlayer.initializeSource(PORTAL_MUSIC_P, portal_music_is, true, false);
-		audioPlayer.initializeSource(PORTAL_VOCALS_P, portal_vocals_is, true, false);
-		audioPlayer.initializeSource(PLAY_P, play_is, false, true);
-		audioPlayer.initializeSource(PAUSE_P, pause_is, false, true);
-		audioPlayer.initializeSource(PREVSEAT_P, prevseat_is, false, true);
-		audioPlayer.initializeSource(NEXTSEAT_P, nextseat_is, false, true);
+	audioPlayer.initializeSource(PORTAL_MUSIC_P, portal_music_is, true, false);
+	audioPlayer.initializeSource(PORTAL_VOCALS_P, portal_vocals_is, true, false);
+	audioPlayer.initializeSource(PLAY_P, play_is, false, true);
+	audioPlayer.initializeSource(PAUSE_P, pause_is, false, true);
+	audioPlayer.initializeSource(PREVSEAT_P, prevseat_is, false, true);
+	audioPlayer.initializeSource(NEXTSEAT_P, nextseat_is, false, true);
 
-		audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -21.000f}));
-		audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -21.000f}));
-	}
+	//Excuse us judges, this would get moved to the xml file later
+	audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -14.800f}));
+	audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -14.800f}));
+    }
 
 	protected void initGL() {
 		int w, h;
