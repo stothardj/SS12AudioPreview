@@ -32,116 +32,130 @@ import com.obj.WavefrontObject;
  *
  */
 public class ExampleApplet extends Applet {
-	private static final long serialVersionUID = -2044141944829708675L;
-	Canvas display_parent;
-	WavefrontObject stadium, marker, chair;
-	private Vertex camera, listener;
-	private float cameraAngle;
-	private float cameraAngle2;
-	private boolean topView;
-	boolean [] prevKeyboard;
-	private SoundWrapper audioPlayer;
-	private SeatSoundWrapper seats;
-	private int currentSeat, currentRow, currentSeatArea;
-	private Venue venue;
-	private static final float HEAD_HEIGHT = 1.0f;
+    private static final long serialVersionUID = -2044141944829708675L;
+    Canvas display_parent;
+    WavefrontObject stadium, marker, chair;
+    private Vertex camera, listener;
+    private float cameraAngle;
+    private float cameraAngle2;
+    private boolean topView;
+    boolean [] prevKeyboard;
+    private SoundWrapper audioPlayer;
+    private SeatSoundWrapper seats;
+    private int currentSeat, currentRow, currentSeatArea;
+    private Venue venue;
+    private static final float HEAD_HEIGHT = 1.0f;
 
-  public static final String PORTAL_MUSIC_P   = "still_music.wav";
-  public static final String PORTAL_VOCALS_P  = "still_vocals.wav";
-  public static final String PLAY_P           = "play.wav";
-  public static final String PAUSE_P          = "pause.wav";
-  public static final String PREVSEAT_P       = "prevseat.wav";
-  public static final String NEXTSEAT_P       = "nextseat.wav";
+    public static final String PORTAL_MUSIC_P   = "still_music.wav";
+    public static final String PORTAL_VOCALS_P  = "still_vocals.wav";
+    public static final String PLAY_P           = "play.wav";
+    public static final String PAUSE_P          = "pause.wav";
+    public static final String PREVSEAT_P       = "prevseat.wav";
+    public static final String NEXTSEAT_P       = "nextseat.wav";
+    public static final String FORWSEAT_P       = "forwseat.wav";
+    public static final String BACKSEAT_P       = "backseat.wav";
+    public static final String INTRO_P          = "introduction.wav";
+    public static final String INSTR_P          = "instructions.wav";
 
-  public static final String STADIUM_P        = "stadium.obj";
-  public static final String SEATS_P          = "seats.xml";
-  public static final String MARKER_P         = "marker.obj";
-  public static final String CHAIR_P          = "chair.obj";
+    public static final String STADIUM_P        = "stadium.obj";
+    public static final String SEATS_P          = "seats.xml";
+    public static final String MARKER_P         = "marker.obj";
+    public static final String CHAIR_P          = "chair.obj";
 
+    public static final int PORTAL_MUSIC_INDEX = 0;
+    public static final int PORTAL_VOCALS_INDEX = 1;
+    public static final int PLAY_INDEX = 2;
+    public static final int PAUSE_INDEX = 3;
+    public static final int PREVSEAT_INDEX = 4;
+    public static final int NEXTSEAT_INDEX = 5;
+    public static final int FORWSEAT_INDEX = 6;
+    public static final int BACKSEAT_INDEX = 7;
+    public static final int INTRO_INDEX = 8;
+    public static final int INSTR_INDEX = 9;
 	
-	/** Thread which runs the main game loop */
-	Thread gameThread;
+    /** Thread which runs the main game loop */
+    Thread gameThread;
 	
-	/** is the game loop running */
-	boolean running = false;	
+    /** is the game loop running */
+    boolean running = false;	
 	
-	public void startLWJGL() {
+    public void startLWJGL() {
 		
-		gameThread = new Thread() {
-			public void run() {
-				running = true;
-				try {
-					Display.setParent(display_parent);
-					Display.create();
-					initGL();
-				} catch (LWJGLException e) {
-					e.printStackTrace();
-				}
-				gameLoop();
-			}
-		};
-		gameThread.start();
-	}
-	
-	
-	/**
-	 * Tell game loop to stop running, after which the LWJGL Display will 
-	 * be destoryed. The main thread will wait for the Display.destroy().
-	 */
-	private void stopLWJGL() {
-		running = false;
-		try {
-			gameThread.join();
-		} catch (InterruptedException e) {
+	gameThread = new Thread() {
+		public void run() {
+		    running = true;
+		    try {
+			Display.setParent(display_parent);
+			Display.create();
+			initGL();
+		    } catch (LWJGLException e) {
 			e.printStackTrace();
+		    }
+		    gameLoop();
 		}
+	    };
+	gameThread.start();
+    }
+	
+	
+    /**
+     * Tell game loop to stop running, after which the LWJGL Display will 
+     * be destoryed. The main thread will wait for the Display.destroy().
+     */
+    private void stopLWJGL() {
+	running = false;
+	try {
+	    gameThread.join();
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
 	}
+    }
 
-	public void start() {}
-	public void stop() {}
+    public void start() {}
+    public void stop() {}
 	
-	/**
-	 * Applet Destroy method will remove the canvas, 
-	 * before canvas is destroyed it will notify stopLWJGL()
-	 * to stop the main game loop and to destroy the Display
-	 */
-	public void destroy() {
-		remove(display_parent);
-		super.destroy();
-	}
+    /**
+     * Applet Destroy method will remove the canvas, 
+     * before canvas is destroyed it will notify stopLWJGL()
+     * to stop the main game loop and to destroy the Display
+     */
+    public void destroy() {
+	remove(display_parent);
+	super.destroy();
+    }
 	
-	public void init() {
-		System.err.println("Program began");
-		audioInit();
-		setLayout(new BorderLayout());
-		try {
-			display_parent = new Canvas() {
-				private static final long serialVersionUID = 8561150810006220384L;
-				public final void addNotify() {
-					super.addNotify();
-					startLWJGL();
-				}
-				public final void removeNotify() {
-					stopLWJGL();
-					super.removeNotify();
-				}
-			};
-			display_parent.setSize(getWidth(),getHeight());
-			add(display_parent);
-			display_parent.setFocusable(true);
-			display_parent.requestFocus();
-			display_parent.setIgnoreRepaint(true);
-			setVisible(true);
-		} catch (Exception e) {
-			System.err.println(e);
-			throw new RuntimeException("Unable to create display");
-		}
+    public void init() {
+	System.err.println("Program began");
+	audioInit();
+	setLayout(new BorderLayout());
+	try {
+	    display_parent = new Canvas() {
+		    private static final long serialVersionUID = 8561150810006220384L;
+		    public final void addNotify() {
+			super.addNotify();
+			startLWJGL();
+		    }
+		    public final void removeNotify() {
+			stopLWJGL();
+			super.removeNotify();
+		    }
+		};
+	    display_parent.setSize(getWidth(),getHeight());
+	    add(display_parent);
+	    display_parent.setFocusable(true);
+	    display_parent.requestFocus();
+	    display_parent.setIgnoreRepaint(true);
+	    setVisible(true);
+	} catch (Exception e) {
+	    System.err.println(e);
+	    throw new RuntimeException("Unable to create display");
 	}
+    }
 	
 
     public void audioInit() {
-	audioPlayer = new SoundWrapper(6);
-	InputStream portal_music_is, portal_vocals_is, pause_is, play_is, prevseat_is, nextseat_is;
+	audioPlayer = new SoundWrapper(10);
+	InputStream portal_music_is, portal_vocals_is, pause_is, play_is, prevseat_is, nextseat_is, forwseat_is, backseat_is, intro_is, instr_is;
 	ClassLoader cl = ExampleApplet.class.getClassLoader();
     
 	portal_music_is   = cl.getResourceAsStream(PORTAL_MUSIC_P);
@@ -150,6 +164,10 @@ public class ExampleApplet extends Applet {
 	pause_is          = cl.getResourceAsStream(PAUSE_P);
 	prevseat_is       = cl.getResourceAsStream(PREVSEAT_P);
 	nextseat_is       = cl.getResourceAsStream(NEXTSEAT_P);
+	forwseat_is       = cl.getResourceAsStream(FORWSEAT_P);
+	backseat_is       = cl.getResourceAsStream(BACKSEAT_P);
+	intro_is          = cl.getResourceAsStream(INTRO_P);
+	instr_is          = cl.getResourceAsStream(INSTR_P);
 
 	audioPlayer.initializeSource(PORTAL_MUSIC_P, portal_music_is, true, false);
 	audioPlayer.initializeSource(PORTAL_VOCALS_P, portal_vocals_is, true, false);
@@ -157,38 +175,44 @@ public class ExampleApplet extends Applet {
 	audioPlayer.initializeSource(PAUSE_P, pause_is, false, true);
 	audioPlayer.initializeSource(PREVSEAT_P, prevseat_is, false, true);
 	audioPlayer.initializeSource(NEXTSEAT_P, nextseat_is, false, true);
+	audioPlayer.initializeSource(FORWSEAT_P, forwseat_is, false, true);
+	audioPlayer.initializeSource(BACKSEAT_P, backseat_is, false, true);
+	audioPlayer.initializeSource(INTRO_P, intro_is, false, true);
+	audioPlayer.initializeSource(INSTR_P, instr_is, false, true);
 
 	//Excuse us judges, this would get moved to the xml file later
-	audioPlayer.setSourcePos(0, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -14.800f}));
-	audioPlayer.setSourcePos(1, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -14.800f}));
+	audioPlayer.setSourcePos(PORTAL_MUSIC_INDEX, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{5.000f, 2.000f, -14.800f}));
+	audioPlayer.setSourcePos(PORTAL_VOCALS_INDEX, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{-4.000f, 2.000f, -14.800f}));
+
+	audioPlayer.singlePlay(INTRO_INDEX);
     }
 
-	protected void initGL() {
-		int w, h;
-		FloatBuffer light_ambient = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.200f, 0.200f, 0.200f, 1.0f});
+    protected void initGL() {
+	int w, h;
+	FloatBuffer light_ambient = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.200f, 0.200f, 0.200f, 1.0f});
 		
-		FloatBuffer light_diffuse = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.600f, 0.600f, 0.600f, 1.0f});
-		FloatBuffer light_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.100f, 0.100f, 0.100f, 1.0f});
-		FloatBuffer light_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 0.000f});
-		FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, -16.000f, 3.000f, 3.000f});
+	FloatBuffer light_diffuse = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.600f, 0.600f, 0.600f, 1.0f});
+	FloatBuffer light_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.100f, 0.100f, 0.100f, 1.0f});
+	FloatBuffer light_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 0.000f});
+	FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, -16.000f, 3.000f, 3.000f});
 		
-		FloatBuffer cube_color = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.200f, 0.200f, 0.200f, 1.000f});
-		FloatBuffer cube_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.000f});
-		FloatBuffer cube_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 0.000f});
+	FloatBuffer cube_color = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.200f, 0.200f, 0.200f, 1.000f});
+	FloatBuffer cube_specular = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, 1.000f, 1.000f, 1.000f});
+	FloatBuffer cube_emission = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{0.000f, 0.000f, 0.000f, 0.000f});
 		
-		light_ambient.rewind();
-		light_position.rewind();
-		cube_color.rewind();
-		cube_specular.rewind();
-		cube_emission.rewind();
-		light_diffuse.rewind();
-		light_specular.rewind();
-		light_emission.rewind();
+	light_ambient.rewind();
+	light_position.rewind();
+	cube_color.rewind();
+	cube_specular.rewind();
+	cube_emission.rewind();
+	light_diffuse.rewind();
+	light_specular.rewind();
+	light_emission.rewind();
 		
-		float cube_shininess = 128.0f;
+	float cube_shininess = 128.0f;
 		
-		w = getWidth();
-		h = getHeight();
+	w = getWidth();
+	h = getHeight();
         GL11.glViewport(0,0,w,h);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
@@ -229,12 +253,12 @@ public class ExampleApplet extends Applet {
         System.out.println("PATH: " + path);
         System.out.println("PATH:" + ExampleApplet.class.getClassLoader().getResource(SEATS_P).getFile());
         try {
-          venues = stadiumParser.parse(path + SEATS_P);
-          stadium = new WavefrontObject(path + STADIUM_P);
-          marker = new WavefrontObject(path + MARKER_P);
-          chair = new WavefrontObject(path + CHAIR_P);
+	    venues = stadiumParser.parse(path + SEATS_P);
+	    stadium = new WavefrontObject(path + STADIUM_P);
+	    marker = new WavefrontObject(path + MARKER_P);
+	    chair = new WavefrontObject(path + CHAIR_P);
         } catch(Exception e) {
-        	e.printStackTrace();
+	    e.printStackTrace();
         }
         
         this.currentSeatArea = 0;
@@ -252,7 +276,7 @@ public class ExampleApplet extends Applet {
         audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{camera.getX(), camera.getY(), camera.getZ()}));
         
         prevKeyboard = new boolean[Keyboard.KEYBOARD_SIZE];
-	}
+    }
 		
     private void render(){
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT |GL11.GL_DEPTH_BUFFER_BIT);
@@ -264,15 +288,15 @@ public class ExampleApplet extends Applet {
         
         Iterator<SeatArea> saIt = venue.getSeatAreas().iterator();
         while(saIt.hasNext()) {
-	        SeatArea sa = saIt.next();
-	        //sa.setSlant(sa.getSlant()+1);
-	        for(int c = 0; c < sa.getSeatsPerRow(); c++)
-	        	for(int r = 0; r < sa.getRows(); r++) {
-	        		Vertex seat = sa.getSeats()[r][c];
-	        		GL11.glTranslatef(seat.getX(), seat.getY(), seat.getZ());
-	        		drawModel(chair);
-	        		GL11.glTranslatef(-seat.getX(), -seat.getY(), -seat.getZ());
-	        	}
+	    SeatArea sa = saIt.next();
+	    //sa.setSlant(sa.getSlant()+1);
+	    for(int c = 0; c < sa.getSeatsPerRow(); c++)
+		for(int r = 0; r < sa.getRows(); r++) {
+		    Vertex seat = sa.getSeats()[r][c];
+		    GL11.glTranslatef(seat.getX(), seat.getY(), seat.getZ());
+		    drawModel(chair);
+		    GL11.glTranslatef(-seat.getX(), -seat.getY(), -seat.getZ());
+		}
         }
         GL11.glTranslatef(listener.getX(), listener.getY(), listener.getZ());
         drawModel(marker);
@@ -282,14 +306,14 @@ public class ExampleApplet extends Applet {
     public void drawModel(WavefrontObject w) {
         Iterator<Group> groupIt = w.getGroups().iterator();
         while(groupIt.hasNext()) {
-        	Group g = groupIt.next();
-    		Vertex kd = g.getMaterial().getKd();        		
-    		GL11.glColor3f(kd.getX(), kd.getY(), kd.getZ());
-        	Iterator<Face> faceIt = g.getFaces().iterator();
-        	while(faceIt.hasNext()) {
-        		Face face = faceIt.next();
-        		drawFace(face);
-        	}
+	    Group g = groupIt.next();
+	    Vertex kd = g.getMaterial().getKd();        		
+	    GL11.glColor3f(kd.getX(), kd.getY(), kd.getZ());
+	    Iterator<Face> faceIt = g.getFaces().iterator();
+	    while(faceIt.hasNext()) {
+		Face face = faceIt.next();
+		drawFace(face);
+	    }
         }    	
     }
     
@@ -304,168 +328,174 @@ public class ExampleApplet extends Applet {
     	
     	shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
     	
-		if(onKeyup(Keyboard.KEY_C))
-			topView = !topView;
+	if(onKeyup(Keyboard.KEY_C))
+	    topView = !topView;
 		
         if(topView) {
-        	if(cameraAngle < 90) {
-        		cameraAngle = Math.min(cameraAngle + 1, 90);
-        		cameraAngle2 = Math.min(cameraAngle2 + 2, 180);
-        		camera.setY(camera.getY() + 0.4f);
-        	}
+	    if(cameraAngle < 90) {
+		cameraAngle = Math.min(cameraAngle + 1, 90);
+		cameraAngle2 = Math.min(cameraAngle2 + 2, 180);
+		camera.setY(camera.getY() + 0.4f);
+	    }
         } else {
-        	if(cameraAngle > 0) {
-        		cameraAngle = Math.max(cameraAngle - 1, 0);
-        		cameraAngle2 = Math.max(cameraAngle2 - 2, 0);
-        		camera.setY(camera.getY() - 0.4f);
-        	}
+	    if(cameraAngle > 0) {
+		cameraAngle = Math.max(cameraAngle - 1, 0);
+		cameraAngle2 = Math.max(cameraAngle2 - 2, 0);
+		camera.setY(camera.getY() - 0.4f);
+	    }
         }
         
         
     	
     	if(shift) {
-        	up = Keyboard.isKeyDown(Keyboard.KEY_UP) ^ topView;
-        	down = Keyboard.isKeyDown(Keyboard.KEY_DOWN) ^ topView;
-        	left = Keyboard.isKeyDown(Keyboard.KEY_LEFT) ^ topView;
-        	right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) ^ topView;
-    		if( up && !down) {
-    			camera.setZ(camera.getZ()-1);
-    			listener.setZ(camera.getZ());
-    		} else if( down && !up) {
-    			camera.setZ(camera.getZ()+1);
-    			listener.setZ(camera.getZ());
-    		}
-    		if( left && !right) {
-    			camera.setX(camera.getX()-1);
-    			listener.setX(camera.getX());
-    		} else if( right && !left) {
-    			camera.setX(camera.getX()+1);
-    			listener.setX(camera.getX());
-    		}
-    		this.setListenerPosition(listener);
+	    up = Keyboard.isKeyDown(Keyboard.KEY_UP) ^ topView;
+	    down = Keyboard.isKeyDown(Keyboard.KEY_DOWN) ^ topView;
+	    left = Keyboard.isKeyDown(Keyboard.KEY_LEFT) ^ topView;
+	    right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) ^ topView;
+	    if( up && !down) {
+		camera.setZ(camera.getZ()-1);
+		listener.setZ(camera.getZ());
+	    } else if( down && !up) {
+		camera.setZ(camera.getZ()+1);
+		listener.setZ(camera.getZ());
+	    }
+	    if( left && !right) {
+		camera.setX(camera.getX()-1);
+		listener.setX(camera.getX());
+	    } else if( right && !left) {
+		camera.setX(camera.getX()+1);
+		listener.setX(camera.getX());
+	    }
+	    this.setListenerPosition(listener);
     	} 
     	else {
-    		Vertex pos = null;
-    		up = onKeyup(Keyboard.KEY_UP) ^ topView;
-    		down = onKeyup(Keyboard.KEY_DOWN) ^ topView;
-    		left = onKeyup(Keyboard.KEY_LEFT) ^ topView;
-    		right = onKeyup(Keyboard.KEY_RIGHT) ^ topView;
-    		int[] seatNumRow = new int[2];
-	    	if( left && !right) {
-	    		System.out.println("LEFT");
-	    		audioPlayer.singlePlay(4);
-	    		seatNumRow = seats.decIncSeat(this.currentSeat, this.currentRow, false);
-	    		this.currentSeat = seatNumRow[1];
-	    		this.currentRow = seatNumRow[0];
-	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
-	    		System.out.println("Current row " + this.currentRow);
-	    		System.out.println("Current seat " + this.currentSeat);
-	    	}
-	    	else if( right && !left) {
-	    		System.out.println("RIGHT");
-	    		audioPlayer.singlePlay(5);
-	    		seatNumRow = seats.decIncSeat(this.currentSeat, this.currentRow, true);
-	    		this.currentSeat = seatNumRow[1];
-	    		this.currentRow = seatNumRow[0];
-	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
-	    		System.out.println("Current row " + this.currentRow);
-	    		System.out.println("Current seat " + this.currentSeat);
-	    	}
-	    	else if( down && !up) {
-	    		this.currentRow = seats.decrementRow(this.currentRow);
-	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
-	    	}
-	    	else if( up && !down) {
-	    		this.currentRow = seats.incrementRow(this.currentRow);
-	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
-	    	}
-	    	else if(onKeyup(Keyboard.KEY_N)) {
-	    		this.currentSeatArea = ++this.currentSeatArea % this.venue.getSeatAreas().size();
-	    		System.out.println(this.currentSeatArea);
-	    		seats.setSeatArea(this.venue.getSeatAreas().get(this.currentSeatArea));
-	    		this.currentSeat = 0;
-	    		this.currentRow = 0;
-	    		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
-	    	}
-	    	else if(onKeyup(Keyboard.KEY_SPACE)) {
-                System.err.println("Space Pressed");
-                if(audioPlayer.areAllPlaying()) {
-                        audioPlayer.singlePlay(3);
-                        audioPlayer.pause();
-                }
-                else {
-                        audioPlayer.singlePlay(2);
-                        audioPlayer.play();
-                }
-	    	}
+	    Vertex pos = null;
+	    up = onKeyup(Keyboard.KEY_UP) ^ topView;
+	    down = onKeyup(Keyboard.KEY_DOWN) ^ topView;
+	    left = onKeyup(Keyboard.KEY_LEFT) ^ topView;
+	    right = onKeyup(Keyboard.KEY_RIGHT) ^ topView;
+	    int[] seatNumRow = new int[2];
+	    if( left && !right) {
+		System.out.println("LEFT");
+		audioPlayer.singlePlay(PREVSEAT_INDEX);
+		seatNumRow = seats.decIncSeat(this.currentSeat, this.currentRow, false);
+		this.currentSeat = seatNumRow[1];
+		this.currentRow = seatNumRow[0];
+		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+		System.out.println("Current row " + this.currentRow);
+		System.out.println("Current seat " + this.currentSeat);
+	    }
+	    else if( right && !left) {
+		System.out.println("RIGHT");
+		audioPlayer.singlePlay(NEXTSEAT_INDEX);
+		seatNumRow = seats.decIncSeat(this.currentSeat, this.currentRow, true);
+		this.currentSeat = seatNumRow[1];
+		this.currentRow = seatNumRow[0];
+		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+		System.out.println("Current row " + this.currentRow);
+		System.out.println("Current seat " + this.currentSeat);
+	    }
+	    else if( down && !up) {
+		this.currentRow = seats.decrementRow(this.currentRow);
+		audioPlayer.singlePlay(BACKSEAT_INDEX);
+		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    }
+	    else if( up && !down) {
+		this.currentRow = seats.incrementRow(this.currentRow);
+		audioPlayer.singlePlay(FORWSEAT_INDEX);
+		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    }
+	    else if(onKeyup(Keyboard.KEY_N)) {
+		this.currentSeatArea = ++this.currentSeatArea % this.venue.getSeatAreas().size();
+		System.out.println(this.currentSeatArea);
+		seats.setSeatArea(this.venue.getSeatAreas().get(this.currentSeatArea));
+		this.currentSeat = 0;
+		this.currentRow = 0;
+		pos = seats.getSeatCoordVertex(this.currentSeat, this.currentRow);
+	    }
+	    else if(onKeyup(Keyboard.KEY_SPACE)) {
+		System.err.println("Space Pressed");
+		if(audioPlayer.areAllPlaying()) {
+		    audioPlayer.singlePlay(PAUSE_INDEX);
+		    audioPlayer.pause();
+		}
+		else {
+		    audioPlayer.singlePlay(PLAY_INDEX);
+		    audioPlayer.play();
+		}
+	    }
 
-	    	if( pos != null ) {
-	    		System.err.println("Pos is "+pos);
-	    		float camlistdiff = camera.getY() - listener.getY();
-		    	listener = new Vertex(pos);
-		    	camera.setX(listener.getX());
-		    	camera.setY(listener.getY() + camlistdiff);
-		    	camera.setZ(listener.getZ());
-		    	this.setListenerPosition(listener);
-	    	}
+	    if( pos != null ) {
+		System.err.println("Pos is "+pos);
+		float camlistdiff = camera.getY() - listener.getY();
+		listener = new Vertex(pos);
+		camera.setX(listener.getX());
+		camera.setY(listener.getY() + camlistdiff);
+		camera.setZ(listener.getZ());
+		this.setListenerPosition(listener);
+	    }
     	}
+
+	if(onKeyup(Keyboard.KEY_H)) {
+	    audioPlayer.stop();
+	    audioPlayer.singlePlay(INSTR_INDEX);
+	}
     }
     public void controlLight() {
-/*
-    	FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, camera.getX(), camera.getY(), camera.getZ()});
-    	light_position.rewind();
-    	GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
-*/
+	/*
+	  FloatBuffer light_position = (FloatBuffer)BufferUtils.createFloatBuffer(4).put(new float[]{1.000f, camera.getX(), camera.getY(), camera.getZ()});
+	  light_position.rewind();
+	  GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, light_position);
+	*/
     }
     public void setListenerPosition(Vertex music) { 	
-    	    	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(2, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(3, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(4, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
-    	    	audioPlayer.setSourcePos(5, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
+	audioPlayer.setListenerPos((FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
+	// Note: This relies on the order of the constants
+	for(int i=PLAY_INDEX; i<=INSTR_INDEX; i++)
+	    audioPlayer.setSourcePos(i, (FloatBuffer)BufferUtils.createFloatBuffer(3).put(new float[]{music.getX(), music.getY(), music.getZ()}).rewind());
     }
-	public void gameLoop() {
-		while(running) {
-			Display.sync(60);
-			render();
-			Display.update();
-			controlCamera();
-			controlLight();
+    public void gameLoop() {
+	while(running) {
+	    Display.sync(60);
+	    render();
+	    Display.update();
+	    controlCamera();
+	    controlLight();
 			
-			//System.err.println("X: "+camera.x+ "Y: "+camera.y+"Z:"+camera.z);
-		}
-		audioPlayer.killALData();
-		Display.destroy();
+	    //System.err.println("X: "+camera.x+ "Y: "+camera.y+"Z:"+camera.z);
 	}
-	public void drawFace(Face face) {
-		Vertex[] verts = face.getVertices();
-		Vertex[] norms = face.getNormals();
-		//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-		GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_FILL);
-		GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_POINT);
-		if(face.getType() == Face.GL_TRIANGLES) {
-	        // Fill
-	        GL11.glBegin(GL11.GL_TRIANGLES);
-	        GL11.glNormal3f(norms[0].getX(), norms[0].getY(), norms[0].getZ());
-	        GL11.glVertex3f(verts[0].getX(), verts[0].getY() , verts[0].getZ() );
-	        GL11.glNormal3f(norms[1].getX(), norms[1].getY(), norms[1].getZ());
-	        GL11.glVertex3f(verts[1].getX(), verts[1].getY() , verts[1].getZ() );
-	        GL11.glNormal3f(norms[2].getX(), norms[2].getY(), norms[2].getZ());
-	        GL11.glVertex3f(verts[2].getX(), verts[2].getY() , verts[2].getZ() );
-	        GL11.glEnd();
-		} else {
-	        // Fill
-	        GL11.glBegin(GL11.GL_QUADS);
-	        GL11.glNormal3f(norms[0].getX(), norms[0].getY(), norms[0].getZ());
-	        GL11.glVertex3f(verts[0].getX(), verts[0].getY() , verts[0].getZ() );
-	        GL11.glNormal3f(norms[1].getX(), norms[1].getY(), norms[1].getZ());
-	        GL11.glVertex3f(verts[1].getX(), verts[1].getY() , verts[1].getZ() );
-	        GL11.glNormal3f(norms[2].getX(), norms[2].getY(), norms[2].getZ());
-	        GL11.glVertex3f(verts[2].getX(), verts[2].getY() , verts[2].getZ() );
-	        GL11.glNormal3f(norms[3].getX(), norms[3].getY(), norms[3].getZ());
-	        GL11.glVertex3f(verts[3].getX(), verts[3].getY() , verts[3].getZ() );
-	        GL11.glEnd();
-		}
+	audioPlayer.killALData();
+	Display.destroy();
+    }
+    public void drawFace(Face face) {
+	Vertex[] verts = face.getVertices();
+	Vertex[] norms = face.getNormals();
+	//GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+	GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_FILL);
+	GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_POINT);
+	if(face.getType() == Face.GL_TRIANGLES) {
+	    // Fill
+	    GL11.glBegin(GL11.GL_TRIANGLES);
+	    GL11.glNormal3f(norms[0].getX(), norms[0].getY(), norms[0].getZ());
+	    GL11.glVertex3f(verts[0].getX(), verts[0].getY() , verts[0].getZ() );
+	    GL11.glNormal3f(norms[1].getX(), norms[1].getY(), norms[1].getZ());
+	    GL11.glVertex3f(verts[1].getX(), verts[1].getY() , verts[1].getZ() );
+	    GL11.glNormal3f(norms[2].getX(), norms[2].getY(), norms[2].getZ());
+	    GL11.glVertex3f(verts[2].getX(), verts[2].getY() , verts[2].getZ() );
+	    GL11.glEnd();
+	} else {
+	    // Fill
+	    GL11.glBegin(GL11.GL_QUADS);
+	    GL11.glNormal3f(norms[0].getX(), norms[0].getY(), norms[0].getZ());
+	    GL11.glVertex3f(verts[0].getX(), verts[0].getY() , verts[0].getZ() );
+	    GL11.glNormal3f(norms[1].getX(), norms[1].getY(), norms[1].getZ());
+	    GL11.glVertex3f(verts[1].getX(), verts[1].getY() , verts[1].getZ() );
+	    GL11.glNormal3f(norms[2].getX(), norms[2].getY(), norms[2].getZ());
+	    GL11.glVertex3f(verts[2].getX(), verts[2].getY() , verts[2].getZ() );
+	    GL11.glNormal3f(norms[3].getX(), norms[3].getY(), norms[3].getZ());
+	    GL11.glVertex3f(verts[3].getX(), verts[3].getY() , verts[3].getZ() );
+	    GL11.glEnd();
 	}
+    }
 
 }
